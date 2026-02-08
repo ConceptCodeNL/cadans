@@ -35,16 +35,28 @@
           >
             {{ $t(`sessions.${session.status}`) }}
           </span>
-          <button
-            type="button"
-            class="ml-auto inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
-            @click="handleExport"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            {{ $t('sessions.exportExcel') }}
-          </button>
+          <div class="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
+              @click="handleExport"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {{ $t('sessions.exportExcel') }}
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-error/30 rounded-lg text-sm font-semibold text-error hover:bg-error/10 hover:border-error transition-colors"
+              @click="showDeleteConfirm = true"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              {{ $t('common.delete') }}
+            </button>
+          </div>
         </div>
 
         <!-- Session details -->
@@ -304,24 +316,38 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Delete Confirmation Dialog -->
+    <ConfirmDialog
+      v-model="showDeleteConfirm"
+      :title="$t('common.confirm')"
+      :message="session ? session.code + ' — ' + $t('sessions.deleteConfirm') : ''"
+      :confirm-text="$t('common.delete')"
+      :cancel-text="$t('common.cancel')"
+      variant="danger"
+      @confirm="confirmDelete"
+    />
   </AppLayout>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSessionsStore } from '@/stores/sessions'
 import { useMeetingsStore } from '@/stores/meetings'
 import AppLayout from '@/components/AppLayout.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { exportSessionToExcel } from '@/utils/exportExcel'
 
 const { t: $t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const sessionsStore = useSessionsStore()
 const meetingsStore = useMeetingsStore()
 
 const loading = ref(true)
+const showDeleteConfirm = ref(false)
 const session = ref(null)
 const meetings = ref([])
 
@@ -394,6 +420,12 @@ function handleExport() {
   if (!session.value || !meetings.value) return
   const locale = $t('app.name') ? (localStorage.getItem('locale') || 'nl') : 'nl'
   exportSessionToExcel(session.value, meetings.value, locale)
+}
+
+async function confirmDelete() {
+  if (!session.value) return
+  await sessionsStore.deleteSession(session.value.id)
+  router.push('/sessions')
 }
 
 function formatDate(dateString) {
