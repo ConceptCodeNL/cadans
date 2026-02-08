@@ -95,7 +95,8 @@
     "emailSubjectStudent": "Uitnodiging: Beoordeel je gesprekken",
     "emailSubjectReviewer": "Uitnodiging: Beoordeel de gesprekken als tweede beoordelaar",
     "emailBodyStudent": "Beste student,\n\nJe bent uitgenodigd om je gesprekken te beoordelen in CADANS.\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen en je beoordeling in te vullen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet",
-    "emailBodyReviewer": "Beste beoordelaar,\n\nJe bent uitgenodigd om als tweede beoordelaar de gesprekken te beoordelen in CADANS.\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen en je beoordeling in te vullen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet"
+    "emailBodyReviewer": "Beste beoordelaar,\n\nJe bent uitgenodigd om als tweede beoordelaar de gesprekken te beoordelen in CADANS.\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen en je beoordeling in te vullen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet",
+    "exportExcel": "Exporteer naar Excel"
   },
   "meetings": {
     "title": "Gesprekken",
@@ -144,7 +145,10 @@
     "lockedMessage": "De toegangscode is geblokkeerd na te veel mislukte pogingen. Neem contact op met de sessie-eigenaar voor een nieuwe code.",
     "invalidLink": "Ongeldige of verlopen link",
     "meetingDetails": "Gesprek Details",
-    "viewOnly": "Alleen-lezen weergave"
+    "viewOnly": "Alleen-lezen weergave",
+    "thankYouTitle": "Bedankt!",
+    "thankYouMessage": "Je beoordeling is succesvol ingediend.",
+    "thankYouClose": "Je kunt dit venster nu sluiten."
   },
   "cookie": {
     "message": "We gebruiken essentiële cookies om onze diensten te leveren.",

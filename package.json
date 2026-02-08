@@ -12,10 +12,11 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "pinia": "^2.1.7",
+    "vee-validate": "^4.12.4",
     "vue": "^3.4.15",
     "vue-i18n": "^9.9.1",
     "vue-router": "^4.2.5",
-    "vee-validate": "^4.12.4",
+    "xlsx": "^0.18.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {
@@ -28,4 +29,3 @@
     "vite": "^5.0.11"
   }
 }
-

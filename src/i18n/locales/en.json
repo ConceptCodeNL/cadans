@@ -95,7 +95,8 @@
     "emailSubjectStudent": "Invitation: Grade your conversations",
     "emailSubjectReviewer": "Invitation: Grade the conversations as second reviewer",
     "emailBodyStudent": "Dear student,\n\nYou have been invited to grade your conversations in CADANS.\n\nYour access code is: {code}\n\nUse the links below to open each conversation and fill in your grading:\n\n{links}\n\nEnter the access code when prompted.\n\nKind regards",
-    "emailBodyReviewer": "Dear reviewer,\n\nYou have been invited to grade the conversations as second reviewer in CADANS.\n\nYour access code is: {code}\n\nUse the links below to open each conversation and fill in your grading:\n\n{links}\n\nEnter the access code when prompted.\n\nKind regards"
+    "emailBodyReviewer": "Dear reviewer,\n\nYou have been invited to grade the conversations as second reviewer in CADANS.\n\nYour access code is: {code}\n\nUse the links below to open each conversation and fill in your grading:\n\n{links}\n\nEnter the access code when prompted.\n\nKind regards",
+    "exportExcel": "Export to Excel"
   },
   "meetings": {
     "title": "Meetings",
@@ -144,7 +145,10 @@
     "lockedMessage": "The access code has been locked after too many failed attempts. Contact the session owner for a new code.",
     "invalidLink": "Invalid or expired link",
     "meetingDetails": "Conversation Details",
-    "viewOnly": "Read-only view"
+    "viewOnly": "Read-only view",
+    "thankYouTitle": "Thank you!",
+    "thankYouMessage": "Your assessment has been submitted successfully.",
+    "thankYouClose": "You can now close this window."
   },
   "cookie": {
     "message": "We use essential cookies to provide our services.",

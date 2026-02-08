@@ -35,6 +35,16 @@
           >
             {{ $t(`sessions.${session.status}`) }}
           </span>
+          <button
+            type="button"
+            class="ml-auto inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
+            @click="handleExport"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            {{ $t('sessions.exportExcel') }}
+          </button>
         </div>
 
         <!-- Session details -->
@@ -304,6 +314,7 @@ import { useI18n } from 'vue-i18n'
 import { useSessionsStore } from '@/stores/sessions'
 import { useMeetingsStore } from '@/stores/meetings'
 import AppLayout from '@/components/AppLayout.vue'
+import { exportSessionToExcel } from '@/utils/exportExcel'
 
 const { t: $t } = useI18n()
 const route = useRoute()
@@ -377,6 +388,12 @@ function openEmailModal(role) {
 function copyEmailBody() {
   navigator.clipboard.writeText(emailModal.body)
   emailModal.show = false
+}
+
+function handleExport() {
+  if (!session.value || !meetings.value) return
+  const locale = $t('app.name') ? (localStorage.getItem('locale') || 'nl') : 'nl'
+  exportSessionToExcel(session.value, meetings.value, locale)
 }
 
 function formatDate(dateString) {
