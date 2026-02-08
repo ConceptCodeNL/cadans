@@ -80,13 +80,14 @@ export const useSessionsStore = defineStore('sessions', () => {
       // Get default competencies
       const { data: competencies } = await supabase
         .from('competency_templates')
-        .select('id, name, default_weight')
+        .select('id, name, description, default_weight')
         .eq('is_system_default', true)
         .order('order', { ascending: true })
 
       const sessionCompetencies = (competencies || []).map(c => ({
         id: c.id,
         name: c.name,
+        description: c.description || '',
         weight: c.default_weight,
       }))
 
@@ -231,6 +232,134 @@ export const useSessionsStore = defineStore('sessions', () => {
       .join('')
   }
 
+  function generateAccessCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let code = ''
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return code
+  }
+
+  async function generateStudentCode(sessionId) {
+    try {
+      const code = generateAccessCode()
+      const { data, error: updateError } = await supabase
+        .from('grading_sessions')
+        .update({
+          student_access_code: code,
+          student_code_attempts: 0,
+          student_code_locked: false,
+        })
+        .eq('id', sessionId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      if (currentSession.value?.id === sessionId) {
+        currentSession.value = data
+      }
+      const index = sessions.value.findIndex(s => s.id === sessionId)
+      if (index !== -1) sessions.value[index] = data
+
+      return { data, error: null }
+    } catch (err) {
+      return { data: null, error: err.message }
+    }
+  }
+
+  async function generateReviewerCode(sessionId) {
+    try {
+      const code = generateAccessCode()
+      const { data, error: updateError } = await supabase
+        .from('grading_sessions')
+        .update({
+          reviewer_access_code: code,
+          reviewer_code_attempts: 0,
+          reviewer_code_locked: false,
+        })
+        .eq('id', sessionId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      if (currentSession.value?.id === sessionId) {
+        currentSession.value = data
+      }
+      const index = sessions.value.findIndex(s => s.id === sessionId)
+      if (index !== -1) sessions.value[index] = data
+
+      return { data, error: null }
+    } catch (err) {
+      return { data: null, error: err.message }
+    }
+  }
+
+  async function verifyAccessCode(sessionId, code, role) {
+    // role = 'student' or 'reviewer'
+    try {
+      const codeField = role === 'student' ? 'student_access_code' : 'reviewer_access_code'
+      const attemptsField = role === 'student' ? 'student_code_attempts' : 'reviewer_code_attempts'
+      const lockedField = role === 'student' ? 'student_code_locked' : 'reviewer_code_locked'
+
+      // Fetch current session data
+      const { data: session, error: fetchError } = await supabase
+        .from('grading_sessions')
+        .select('id, ' + codeField + ', ' + attemptsField + ', ' + lockedField)
+        .eq('id', sessionId)
+        .single()
+
+      if (fetchError) throw fetchError
+      if (!session) throw new Error('Session not found')
+
+      // Check if locked
+      if (session[lockedField]) {
+        return { success: false, locked: true, attemptsLeft: 0 }
+      }
+
+      // Check if code exists
+      if (!session[codeField]) {
+        return { success: false, locked: false, attemptsLeft: 0, noCode: true }
+      }
+
+      // Verify code
+      if (session[codeField] === code.toUpperCase()) {
+        // Reset attempts on success
+        await supabase
+          .from('grading_sessions')
+          .update({ [attemptsField]: 0 })
+          .eq('id', sessionId)
+
+        return { success: true, locked: false }
+      }
+
+      // Wrong code - increment attempts
+      const newAttempts = (session[attemptsField] || 0) + 1
+      const updates = { [attemptsField]: newAttempts }
+
+      if (newAttempts >= 10) {
+        // Lock the code
+        updates[lockedField] = true
+        updates[codeField] = null // Remove the code
+      }
+
+      await supabase
+        .from('grading_sessions')
+        .update(updates)
+        .eq('id', sessionId)
+
+      return {
+        success: false,
+        locked: newAttempts >= 10,
+        attemptsLeft: Math.max(0, 10 - newAttempts),
+      }
+    } catch (err) {
+      return { success: false, locked: false, attemptsLeft: 0, error: err.message }
+    }
+  }
+
   return {
     sessions,
     currentSession,
@@ -243,5 +372,8 @@ export const useSessionsStore = defineStore('sessions', () => {
     deleteSession,
     inviteReviewer,
     generateCode,
+    generateStudentCode,
+    generateReviewerCode,
+    verifyAccessCode,
   }
 })

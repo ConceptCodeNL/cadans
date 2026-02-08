@@ -50,11 +50,11 @@
 
         <!-- Meta info -->
         <div class="space-y-1 mb-4 text-sm text-text-secondary">
-          <p v-if="session.own_reference" class="font-medium text-text-primary">
-            {{ session.own_reference }}
+          <p>
+            <span class="text-text-tertiary">{{ $t('sessions.ownReference') }}:</span> {{ session.own_reference || $t('common.notSet') }}
           </p>
-          <p v-if="session.company">
-            <span class="text-text-tertiary">{{ $t('sessions.company') }}:</span> {{ session.company }}
+          <p>
+            <span class="text-text-tertiary">{{ $t('sessions.company') }}:</span> {{ session.company || $t('common.notSet') }}
           </p>
           <p>
             <span class="text-text-tertiary">{{ $t('sessions.startDate') }}:</span>
@@ -62,8 +62,9 @@
           </p>
         </div>
 
-        <!-- Meeting buttons -->
-        <div class="flex gap-2 mb-4">
+        <!-- Teacher meeting buttons -->
+        <p class="text-xs text-text-tertiary font-medium mb-1">{{ $t('sessions.teacherRow') }}</p>
+        <div class="flex gap-2 mb-2">
           <RouterLink
             v-for="meeting in getMeetings(session.id)"
             :key="meeting.id"
@@ -72,10 +73,46 @@
               'flex-1 py-2 rounded-lg text-center text-xs font-semibold transition-colors',
               getMeetingClass(meeting.overall_grade)
             ]"
-            :title="`${$t('meetings.meeting')} ${meeting.meeting_number}`"
+            :title="`${$t('sessions.teacherRow')} - ${$t('meetings.meeting')} ${meeting.meeting_number}`"
           >
             {{ meeting.meeting_number }}
           </RouterLink>
+        </div>
+
+        <!-- Reviewer meeting buttons -->
+        <p class="text-xs text-text-tertiary font-medium mb-1">{{ $t('sessions.reviewerRow') }}</p>
+        <div class="flex gap-2 mb-2">
+          <div
+            v-for="meeting in getMeetings(session.id)"
+            :key="'r-' + meeting.id"
+            :class="[
+              'flex-1 py-2 rounded-lg text-center text-xs font-semibold',
+              session.reviewer_access_code
+                ? 'bg-info-light text-info-text border border-info-border'
+                : 'bg-hover text-text-tertiary border border-border'
+            ]"
+            :title="`${$t('sessions.reviewerRow')} - ${$t('meetings.meeting')} ${meeting.meeting_number}`"
+          >
+            {{ meeting.meeting_number }}
+          </div>
+        </div>
+
+        <!-- Student meeting buttons -->
+        <p class="text-xs text-text-tertiary font-medium mb-1">{{ $t('sessions.studentRow') }}</p>
+        <div class="flex gap-2 mb-4">
+          <div
+            v-for="meeting in getMeetings(session.id)"
+            :key="'s-' + meeting.id"
+            :class="[
+              'flex-1 py-2 rounded-lg text-center text-xs font-semibold',
+              session.student_access_code
+                ? 'bg-primary-light text-primary-dark border border-primary'
+                : 'bg-hover text-text-tertiary border border-border'
+            ]"
+            :title="`${$t('sessions.studentRow')} - ${$t('meetings.meeting')} ${meeting.meeting_number}`"
+          >
+            {{ meeting.meeting_number }}
+          </div>
         </div>
 
         <RouterLink
@@ -250,7 +287,7 @@ async function fetchAllMeetings() {
 
   const { data } = await supabase
     .from('meetings')
-    .select('id, grading_session_id, meeting_number, overall_grade, status')
+    .select('id, grading_session_id, meeting_number, overall_grade, status, student_token, reviewer_token')
     .in('grading_session_id', sessionIds)
     .order('meeting_number', { ascending: true })
 
@@ -328,12 +365,4 @@ function getTypeClass(type) {
   return classes[type] || classes.standard_intern
 }
 
-function getStatusClass(status) {
-  const classes = {
-    active: 'bg-primary-light text-primary-text',
-    completed: 'bg-success-light text-success-text',
-    archived: 'bg-muted text-muted-text',
-  }
-  return classes[status] || classes.active
-}
 </script>

@@ -72,7 +72,23 @@
     "archived": "Archived",
     "inviteCompanyGrader": "Invite Company Grader",
     "inviteSecondReviewer": "Invite Second Reviewer",
-    "competencies": "Competencies"
+    "competencies": "Competencies",
+    "teacherRow": "Teacher",
+    "reviewerRow": "Second Reviewer",
+    "studentRow": "Student",
+    "accessCodes": "Access Codes",
+    "studentAccessCode": "Student Code",
+    "reviewerAccessCode": "Reviewer Code",
+    "generateAccessCode": "Generate Code",
+    "regenerateAccessCode": "Regenerate Code",
+    "codeLocked": "Locked",
+    "codeLockedWarning": "The {role} code has been locked after 10 failed attempts. Generate a new code.",
+    "codeGenerated": "Access code generated",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link copied to clipboard!",
+    "noCodeYet": "No code generated yet",
+    "attemptsLeft": "{count} attempts left",
+    "shareLinks": "Share Links"
   },
   "meetings": {
     "title": "Meetings",
@@ -84,6 +100,13 @@
     "goButNeedsAttention": "Go but needs attention",
     "allGood": "All good",
     "competencyScores": "Competency Scores",
+    "scoreAdvice": "Advice based on scores",
+    "scoreBad": "Bad",
+    "scoreNeedsAttention": "Needs attention",
+    "scoreNeutral": "Neutral",
+    "scoreGood": "Good",
+    "scorePerfect": "Perfect",
+    "noScoresYet": "Fill in scores to see advice",
     "notes": "Notes",
     "generalNotes": "General Notes",
     "saveDraft": "Save Draft",
@@ -98,7 +121,8 @@
     "editTipTop": "Edit {type}",
     "tipPlaceholder": "What could the student improve?",
     "topPlaceholder": "What did the student do well?",
-    "noTipsTops": "No tips or tops added yet. Use the buttons above to add feedback."
+    "noTipsTops": "No tips or tops added yet. Use the buttons above to add feedback.",
+    "competencyInfo": "What is expected?"
   },
   "endGrade": {
     "title": "End Grade",
@@ -110,6 +134,18 @@
     "view": "View End Grade",
     "create": "Create End Grade",
     "competencyBreakdown": "Competency Breakdown"
+  },
+  "publicAccess": {
+    "title": "View Conversation",
+    "enterCode": "Enter the access code",
+    "codePlaceholder": "Access code",
+    "verify": "Verify",
+    "wrongCode": "Incorrect code. {attemptsLeft} attempts left.",
+    "locked": "Access Locked",
+    "lockedMessage": "The access code has been locked after too many failed attempts. Contact the session owner for a new code.",
+    "invalidLink": "Invalid or expired link",
+    "meetingDetails": "Conversation Details",
+    "viewOnly": "Read-only view"
   },
   "cookie": {
     "message": "We use essential cookies to provide our services.",

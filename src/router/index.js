@@ -71,6 +71,18 @@ const router = createRouter({
       meta: { requiresAuth: false }
     },
     {
+      path: '/m/s/:token',
+      name: 'public-student-meeting',
+      component: () => import('@/views/meetings/PublicMeetingView.vue'),
+      meta: { requiresAuth: false, isPublic: true }
+    },
+    {
+      path: '/m/r/:token',
+      name: 'public-reviewer-meeting',
+      component: () => import('@/views/meetings/PublicMeetingView.vue'),
+      meta: { requiresAuth: false, isPublic: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/NotFoundView.vue')
