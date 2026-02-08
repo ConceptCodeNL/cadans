@@ -48,6 +48,29 @@ export const useSessionsStore = defineStore('sessions', () => {
         .single()
       
       if (fetchError) throw fetchError
+
+      // Ensure graduation sessions have the "Defense" competency
+      if (data && data.type === 'graduation' && Array.isArray(data.competencies)) {
+        const hasDefense = data.competencies.some(c => c.id === 'defense')
+        if (!hasDefense) {
+          data.competencies.push({
+            id: 'defense',
+            name: { en: 'Defense', nl: 'Verdediging' },
+            description: {
+              en: 'Assessment of the student\'s graduation defense presentation and ability to explain and defend their work.',
+              nl: 'Beoordeling van de afstudeerverdediging van de student en het vermogen om het werk uit te leggen en te verdedigen.',
+            },
+            weight: 1,
+            endGradeOnly: true,
+          })
+          // Persist the updated competencies
+          await supabase
+            .from('grading_sessions')
+            .update({ competencies: data.competencies })
+            .eq('id', data.id)
+        }
+      }
+
       currentSession.value = data
       return { data, error: null }
     } catch (err) {
@@ -77,19 +100,39 @@ export const useSessionsStore = defineStore('sessions', () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      // Get default competencies
+      // Get default competencies (multilingual)
       const { data: competencies } = await supabase
         .from('competency_templates')
-        .select('id, name, description, default_weight')
+        .select('id, name, name_en, name_nl, description, description_en, description_nl, default_weight')
         .eq('is_system_default', true)
         .order('order', { ascending: true })
 
       const sessionCompetencies = (competencies || []).map(c => ({
         id: c.id,
-        name: c.name,
-        description: c.description || '',
+        name: {
+          en: c.name_en || c.name || '',
+          nl: c.name_nl || c.name || '',
+        },
+        description: {
+          en: c.description_en || c.description || '',
+          nl: c.description_nl || c.description || '',
+        },
         weight: c.default_weight,
       }))
+
+      // Add "Defense" competency for graduation sessions (end grade only)
+      if (type === 'graduation') {
+        sessionCompetencies.push({
+          id: 'defense',
+          name: { en: 'Defense', nl: 'Verdediging' },
+          description: {
+            en: 'Assessment of the student\'s graduation defense presentation and ability to explain and defend their work.',
+            nl: 'Beoordeling van de afstudeerverdediging van de student en het vermogen om het werk uit te leggen en te verdedigen.',
+          },
+          weight: 1,
+          endGradeOnly: true,
+        })
+      }
 
       // Create the session
       const { data: session, error: insertError } = await supabase
@@ -102,7 +145,7 @@ export const useSessionsStore = defineStore('sessions', () => {
           teacher_id: user.id,
           start_date: null,
           end_date: null,
-          number_of_meetings: 3,
+          number_of_meetings: 4,
           competencies: sessionCompetencies,
         })
         .select()
@@ -110,7 +153,7 @@ export const useSessionsStore = defineStore('sessions', () => {
 
       if (insertError) throw insertError
 
-      // Auto-create 3 empty meetings
+      // Auto-create 3 regular meetings + 1 eindbeoordeling
       const meetingInserts = []
       for (let i = 1; i <= 3; i++) {
         meetingInserts.push({
@@ -119,8 +162,18 @@ export const useSessionsStore = defineStore('sessions', () => {
           meeting_date: null,
           graded_by: user.id,
           status: 'draft',
+          is_end_grade: false,
         })
       }
+      // Add eindbeoordeling as the last meeting
+      meetingInserts.push({
+        grading_session_id: session.id,
+        meeting_number: 4,
+        meeting_date: null,
+        graded_by: user.id,
+        status: 'draft',
+        is_end_grade: true,
+      })
 
       const { error: meetingsError } = await supabase
         .from('meetings')

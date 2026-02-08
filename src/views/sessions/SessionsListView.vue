@@ -19,7 +19,7 @@
       <p class="text-text-tertiary text-sm">{{ $t('sessions.createFirst') }}</p>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div
         v-for="session in sessionsStore.sessions"
         :key="session.id"
@@ -73,9 +73,9 @@
               'flex-1 py-2 rounded-lg text-center text-xs font-semibold transition-colors',
               getMeetingClass(meeting.overall_grade)
             ]"
-            :title="`${$t('sessions.teacherRow')} - ${$t('meetings.meeting')} ${meeting.meeting_number}`"
+            :title="meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}`"
           >
-            {{ meeting.meeting_number }}
+            {{ meeting.is_end_grade ? 'EB' : meeting.meeting_number }}
           </RouterLink>
         </div>
 
@@ -91,9 +91,9 @@
                 ? 'bg-info-light text-info-text border border-info-border'
                 : 'bg-hover text-text-tertiary border border-border'
             ]"
-            :title="`${$t('sessions.reviewerRow')} - ${$t('meetings.meeting')} ${meeting.meeting_number}`"
+            :title="meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}`"
           >
-            {{ meeting.meeting_number }}
+            {{ meeting.is_end_grade ? 'EB' : meeting.meeting_number }}
           </div>
         </div>
 
@@ -109,9 +109,9 @@
                 ? 'bg-primary-light text-primary-dark border border-primary'
                 : 'bg-hover text-text-tertiary border border-border'
             ]"
-            :title="`${$t('sessions.studentRow')} - ${$t('meetings.meeting')} ${meeting.meeting_number}`"
+            :title="meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}`"
           >
-            {{ meeting.meeting_number }}
+            {{ meeting.is_end_grade ? 'EB' : meeting.meeting_number }}
           </div>
         </div>
 
@@ -287,7 +287,7 @@ async function fetchAllMeetings() {
 
   const { data } = await supabase
     .from('meetings')
-    .select('id, grading_session_id, meeting_number, overall_grade, status, student_token, reviewer_token')
+    .select('id, grading_session_id, meeting_number, overall_grade, status, student_token, reviewer_token, is_end_grade')
     .in('grading_session_id', sessionIds)
     .order('meeting_number', { ascending: true })
 

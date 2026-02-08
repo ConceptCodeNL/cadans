@@ -17,7 +17,7 @@
           ← {{ $t('common.back') }}
         </RouterLink>
         <h1 class="font-heading text-4xl mt-4">
-          {{ $t('meetings.meeting') }} {{ meeting.meeting_number }}
+          {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
         </h1>
       </div>
 
@@ -36,8 +36,8 @@
             />
           </div>
 
-          <!-- Overall Grade -->
-          <div class="md:col-span-3">
+          <!-- Overall Grade (hidden for end grade) -->
+          <div v-if="!(meeting && meeting.is_end_grade)" class="md:col-span-3">
             <label class="block text-sm font-medium mb-2">
               {{ $t('meetings.overallGrade') }} *
             </label>
@@ -89,42 +89,58 @@
           </div>
 
           <!-- Advice banner based on average score -->
-          <div
-            :class="[
-              'rounded-xl p-4 mb-6 border flex items-center gap-3 transition-all',
-              averageAdvice.bannerClass
-            ]"
-          >
+          <div class="flex gap-4 mb-6">
             <div
               :class="[
-                'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-white',
-                averageAdvice.iconClass
+                'rounded-xl p-4 border flex items-center gap-3 transition-all flex-1',
+                averageAdvice.bannerClass
               ]"
             >
-              {{ averageAdvice.numericAvg ?? '–' }}
+              <div
+                :class="[
+                  'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-white',
+                  averageAdvice.iconClass
+                ]"
+              >
+                {{ averageAdvice.numericAvg ?? '–' }}
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wide opacity-75">{{ $t('meetings.scoreAdvice') }}</p>
+                <p class="font-heading text-lg">{{ averageAdvice.label }}</p>
+              </div>
             </div>
-            <div>
-              <p class="text-xs font-medium uppercase tracking-wide opacity-75">{{ $t('meetings.scoreAdvice') }}</p>
-              <p class="font-heading text-lg">{{ averageAdvice.label }}</p>
+            <!-- Average numeric grade (end grade only) -->
+            <div
+              v-if="meeting && meeting.is_end_grade"
+              class="rounded-xl p-4 border border-border bg-surface-elevated flex flex-col items-center justify-center text-center transition-all"
+            >
+              <p class="text-xs font-medium uppercase tracking-wide opacity-75">{{ $t('meetings.averageGrade') }}</p>
+              <p class="font-heading text-2xl">{{ averageGrade != null ? averageGrade : '–' }}</p>
             </div>
           </div>
           <div class="space-y-6">
             <div
-              v-for="comp in session.competencies"
+              v-for="comp in visibleCompetencies"
               :key="comp.id"
-              class="bg-surface rounded-xl p-6 border border-border"
+              :class="[
+                'bg-surface rounded-xl p-6',
+                comp.endGradeOnly ? 'border-2 border-primary' : 'border border-border'
+              ]"
             >
+              <div class="flex gap-6">
+                <!-- Left: competency content -->
+                <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center mb-2">
-                <h3 class="font-heading text-xl">{{ comp.name }}</h3>
+                <h3 class="font-heading text-xl">{{ localized(comp.name) }}</h3>
                 <span class="text-sm text-text-secondary">Weight: {{ comp.weight }}x</span>
               </div>
 
               <!-- Competency description accordion -->
-              <div v-if="comp.description" class="mb-4">
+              <div v-if="localized(comp.description)" class="mb-4">
                 <button
                   type="button"
                   @click="toggleCompetencyInfo(comp.id)"
-                  class="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-dark transition-colors"
+                  class="inline-flex items-center gap-1.5 text-xs font-medium text-success-dark hover:text-success transition-colors"
                 >
                   <svg
                     class="w-4 h-4 transition-transform duration-200"
@@ -142,7 +158,7 @@
                     v-if="expandedCompetencies[comp.id]"
                     class="mt-2 p-4 bg-surface-elevated rounded-lg border border-border text-sm text-text-secondary whitespace-pre-line leading-relaxed"
                   >
-                    {{ comp.description }}
+                    {{ localized(comp.description) }}
                   </div>
                 </Transition>
               </div>
@@ -268,6 +284,39 @@
                   </div>
                 </div>
               </div>
+                </div>
+                <!-- Right: numeric grade input (end grade only) -->
+                <div
+                  v-if="meeting && meeting.is_end_grade"
+                  class="flex-shrink-0 flex items-center gap-4"
+                >
+                  <!-- Second reviewer grade reference -->
+                  <div
+                    v-if="reviewerGrades && reviewerGrades[comp.id] != null"
+                    class="flex flex-col items-center justify-center"
+                  >
+                    <label class="text-xs text-text-tertiary font-medium mb-2 uppercase tracking-wide">{{ $t('sessions.reviewerRow') }}</label>
+                    <div class="w-20 h-20 flex items-center justify-center text-2xl font-bold text-text-secondary bg-surface border-2 border-dashed border-border rounded-xl">
+                      {{ reviewerGrades[comp.id] }}
+                    </div>
+                  </div>
+                  <!-- Teacher grade input -->
+                  <div class="flex flex-col items-center justify-center">
+                    <label class="text-xs text-text-tertiary font-medium mb-2 uppercase tracking-wide">{{ $t('meetings.competencyGrade') }}</label>
+                    <input
+                      v-model.number="formData.competencyGrades[comp.id]"
+                      type="number"
+                      min="1"
+                      max="10"
+                      step="0.5"
+                      class="w-24 h-24 text-center text-3xl font-bold border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-surface-elevated"
+                      placeholder="–"
+                      @focus="$event.target.select()"
+                      @blur="validateGrade(comp.id)"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -288,24 +337,40 @@
           {{ error }}
         </div>
 
-        <div class="flex gap-4">
-          <button
-            type="button"
-            @click="handleSaveDraft"
-            :disabled="saving"
-            class="flex-1 px-6 py-3 border border-border rounded-lg font-semibold hover:bg-hover transition-colors disabled:opacity-50"
-          >
-            {{ saving ? $t('common.loading') : $t('meetings.saveDraft') }}
-          </button>
-          <button
-            type="submit"
-            :disabled="!canSubmit || submitting"
-            class="flex-1 px-6 py-3 bg-primary text-primary-text rounded-lg font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50"
-          >
-            {{ submitting ? $t('common.loading') : $t('meetings.submit') }}
-          </button>
-        </div>
       </form>
+    </div>
+
+    <!-- Floating Buttons -->
+    <div class="fixed bottom-6 right-6 z-40 flex gap-3 items-center">
+      <!-- Save Draft Button -->
+      <button
+        type="button"
+        @click="handleSaveDraft"
+        :disabled="saving"
+        class="px-5 py-3 bg-surface-elevated border border-border rounded-full font-semibold shadow-lg hover:bg-hover hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+        </svg>
+        {{ saving ? $t('common.loading') : $t('meetings.saveDraft') }}
+      </button>
+      <!-- Submit Button -->
+      <button
+        type="button"
+        @click="handleSubmit"
+        :disabled="!canSubmit || submitting"
+        :class="[
+          'px-5 py-3 rounded-full font-semibold shadow-lg transition-all flex items-center gap-2 text-sm',
+          canSubmit
+            ? 'bg-success text-white hover:bg-success-dark hover:shadow-xl'
+            : 'bg-border text-text-tertiary cursor-not-allowed'
+        ]"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        {{ submitting ? $t('common.loading') : $t('meetings.submit') }}
+      </button>
     </div>
 
     <!-- Tip/Top Modal -->
@@ -394,12 +459,20 @@ import { useSessionsStore } from '@/stores/sessions'
 import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/AppLayout.vue'
 
-const { t: $t } = useI18n()
+const { t: $t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const meetingsStore = useMeetingsStore()
 const sessionsStore = useSessionsStore()
 const authStore = useAuthStore()
+
+// Helper for multilingual competency fields (backward compatible with old string format)
+function localized(value) {
+  if (typeof value === 'object' && value !== null) {
+    return value[locale.value] || value['nl'] || value['en'] || ''
+  }
+  return value || ''
+}
 
 const loading = ref(true)
 const saving = ref(false)
@@ -407,6 +480,7 @@ const submitting = ref(false)
 const error = ref('')
 const meeting = ref(null)
 const session = ref(null)
+const reviewerGrades = ref(null)
 
 // Score level definitions
 const scoreLevels = [
@@ -461,6 +535,7 @@ const formData = ref({
   meetingDate: '',
   overallGrade: '',
   competencyScores: {},
+  competencyGrades: {}, // { [compId]: number 1-10 } — only for end grade meetings
   competencyTipsTops: {}, // { [compId]: [{ id, type, text }] }
   generalNotes: '',
 })
@@ -481,10 +556,16 @@ onMounted(async () => {
       // Support both old competency_notes (string) and new competency_tips_tops (array) format
       const competencyTipsTops = meeting.value.competency_notes || {}
       
+      // Load reviewer grades for reference (end grade only)
+      if (meeting.value.is_end_grade && meeting.value.reviewer_competency_grades) {
+        reviewerGrades.value = meeting.value.reviewer_competency_grades
+      }
+
       formData.value = {
         meetingDate: meeting.value.meeting_date || '',
         overallGrade: meeting.value.overall_grade || '',
         competencyScores: meeting.value.competency_scores || {},
+        competencyGrades: meeting.value.competency_grades || {},
         competencyTipsTops: competencyTipsTops,
         generalNotes: meeting.value.general_notes || '',
       }
@@ -503,6 +584,7 @@ onMounted(async () => {
     if (session.value) {
       session.value.competencies.forEach(comp => {
         formData.value.competencyScores[comp.id] = null
+        formData.value.competencyGrades[comp.id] = null
         formData.value.competencyTipsTops[comp.id] = []
       })
     }
@@ -511,11 +593,19 @@ onMounted(async () => {
   loading.value = false
 })
 
+// Filter competencies: hide endGradeOnly competencies for regular meetings
+const visibleCompetencies = computed(() => {
+  if (!session.value) return []
+  const isEndGrade = meeting.value?.is_end_grade
+  return session.value.competencies.filter(comp => isEndGrade || !comp.endGradeOnly)
+})
+
 const canSubmit = computed(() => {
-  if (!formData.value.overallGrade) return false
   if (!session.value) return false
+  const isEndGrade = meeting.value?.is_end_grade
+  if (!isEndGrade && !formData.value.overallGrade) return false
   
-  return session.value.competencies.every(comp => 
+  return visibleCompetencies.value.every(comp => 
     formData.value.competencyScores[comp.id] != null
   )
 })
@@ -526,7 +616,7 @@ const averageAdvice = computed(() => {
     return { label: $t('meetings.noScoresYet'), numericAvg: null, bannerClass: 'bg-surface-elevated border-border', iconClass: 'bg-border' }
   }
 
-  const comps = session.value.competencies
+  const comps = visibleCompetencies.value
   let totalWeighted = 0
   let totalWeight = 0
   let hasAnyScore = false
@@ -559,6 +649,26 @@ const averageAdvice = computed(() => {
   } else {
     return { label: $t('meetings.scorePerfect'), numericAvg: rounded, bannerClass: 'bg-success/10 border-success text-success-text', iconClass: 'bg-success' }
   }
+})
+
+// Compute average of numeric competency grades (1-10) for end grade meetings
+const averageGrade = computed(() => {
+  if (!session.value || !meeting.value?.is_end_grade) return null
+
+  const comps = visibleCompetencies.value
+  let total = 0
+  let count = 0
+
+  comps.forEach(comp => {
+    const grade = formData.value.competencyGrades[comp.id]
+    if (grade != null && grade !== '' && !isNaN(grade)) {
+      total += Number(grade)
+      count++
+    }
+  })
+
+  if (count === 0) return null
+  return Math.round((total / count) * 2) / 2
 })
 
 // Helpers
@@ -623,11 +733,44 @@ function closeTipTopModal() {
   editingCompetencyId.value = null
 }
 
+function validateGrade(compId) {
+  const val = formData.value.competencyGrades[compId]
+  if (val == null || val === '') {
+    formData.value.competencyGrades[compId] = null
+    return
+  }
+  const num = Number(val)
+  if (isNaN(num) || num < 1 || num > 10 || (num * 2) % 1 !== 0) {
+    // Round to nearest 0.5 if possible, otherwise clear
+    const rounded = Math.round(num * 2) / 2
+    if (rounded >= 1 && rounded <= 10) {
+      formData.value.competencyGrades[compId] = rounded
+    } else {
+      formData.value.competencyGrades[compId] = null
+    }
+  }
+}
+
+function sanitizeGrades() {
+  const sanitized = {}
+  for (const [key, val] of Object.entries(formData.value.competencyGrades)) {
+    if (val == null || val === '') {
+      sanitized[key] = null
+      continue
+    }
+    const num = Number(val)
+    const rounded = Math.round(num * 2) / 2
+    sanitized[key] = (!isNaN(rounded) && rounded >= 1 && rounded <= 10) ? rounded : null
+  }
+  return sanitized
+}
+
 function buildMeetingData(status) {
   return {
     meeting_date: formData.value.meetingDate || null,
     overall_grade: formData.value.overallGrade || null,
     competency_scores: formData.value.competencyScores,
+    competency_grades: sanitizeGrades(),
     competency_notes: formData.value.competencyTipsTops,
     general_notes: formData.value.generalNotes || null,
     tips_tops: [], // No longer used globally

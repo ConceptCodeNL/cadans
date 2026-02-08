@@ -41,12 +41,6 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/session/:sessionId/end-grade',
-      name: 'end-grade',
-      component: () => import('@/views/endGrade/EndGradeView.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
       path: '/settings',
       name: 'settings',
       component: () => import('@/views/settings/SettingsView.vue'),

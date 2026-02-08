@@ -38,15 +38,15 @@
         </div>
 
         <!-- Session details -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 bg-surface rounded-xl p-6 border border-border">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 bg-surface rounded-xl p-6 border border-border">
           <div class="space-y-3">
-            <div v-if="session.company">
-              <p class="text-xs text-text-tertiary uppercase tracking-wide">{{ $t('sessions.company') }}</p>
-              <p class="font-medium">{{ session.company }}</p>
-            </div>
-            <div v-if="session.own_reference">
+            <div>
               <p class="text-xs text-text-tertiary uppercase tracking-wide">{{ $t('sessions.ownReference') }}</p>
-              <p class="font-medium">{{ session.own_reference }}</p>
+              <p class="font-medium">{{ session.own_reference || $t('common.notSet') }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-text-tertiary uppercase tracking-wide">{{ $t('sessions.company') }}</p>
+              <p class="font-medium">{{ session.company || $t('common.notSet') }}</p>
             </div>
             <div>
               <p class="text-xs text-text-tertiary uppercase tracking-wide">{{ $t('sessions.meetings') }}</p>
@@ -63,6 +63,99 @@
               <p class="font-medium">{{ session.end_date ? formatDate(session.end_date) : $t('common.notSet') }}</p>
             </div>
           </div>
+          <!-- Access Codes -->
+          <div class="space-y-3">
+            <!-- Student code -->
+            <div>
+              <p class="text-xs text-text-tertiary uppercase tracking-wide mb-1">{{ $t('sessions.studentAccessCode') }}</p>
+              <div v-if="session.student_code_locked" class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-error">{{ $t('sessions.codeLocked') }}</span>
+                <button
+                  type="button"
+                  class="text-xs text-primary hover:text-primary-dark font-medium"
+                  @click="handleGenerateStudentCode"
+                >
+                  {{ $t('sessions.regenerateAccessCode') }}
+                </button>
+              </div>
+              <div v-else-if="session.student_access_code" class="flex items-center gap-2">
+                <span class="font-mono text-sm font-bold tracking-widest">{{ session.student_access_code }}</span>
+                <button
+                  type="button"
+                  class="p-1 text-text-tertiary hover:text-text-primary rounded hover:bg-hover transition-colors"
+                  title="Copy code"
+                  @click="copyToClipboard(session.student_access_code)"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="p-1 text-text-tertiary hover:text-primary rounded hover:bg-hover transition-colors"
+                  :title="$t('sessions.emailTemplate')"
+                  @click="openEmailModal('student')"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <button
+                v-else
+                type="button"
+                class="px-3 py-1.5 bg-primary text-primary-text rounded-lg font-semibold text-xs hover:bg-primary-hover transition-colors"
+                @click="handleGenerateStudentCode"
+              >
+                {{ $t('sessions.generateAccessCode') }}
+              </button>
+            </div>
+            <!-- Reviewer code -->
+            <div>
+              <p class="text-xs text-text-tertiary uppercase tracking-wide mb-1">{{ $t('sessions.reviewerAccessCode') }}</p>
+              <div v-if="session.reviewer_code_locked" class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-error">{{ $t('sessions.codeLocked') }}</span>
+                <button
+                  type="button"
+                  class="text-xs text-primary hover:text-primary-dark font-medium"
+                  @click="handleGenerateReviewerCode"
+                >
+                  {{ $t('sessions.regenerateAccessCode') }}
+                </button>
+              </div>
+              <div v-else-if="session.reviewer_access_code" class="flex items-center gap-2">
+                <span class="font-mono text-sm font-bold tracking-widest">{{ session.reviewer_access_code }}</span>
+                <button
+                  type="button"
+                  class="p-1 text-text-tertiary hover:text-text-primary rounded hover:bg-hover transition-colors"
+                  title="Copy code"
+                  @click="copyToClipboard(session.reviewer_access_code)"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="p-1 text-text-tertiary hover:text-primary rounded hover:bg-hover transition-colors"
+                  :title="$t('sessions.emailTemplate')"
+                  @click="openEmailModal('reviewer')"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <button
+                v-else
+                type="button"
+                class="px-3 py-1.5 bg-primary text-primary-text rounded-lg font-semibold text-xs hover:bg-primary-hover transition-colors"
+                @click="handleGenerateReviewerCode"
+              >
+                {{ $t('sessions.generateAccessCode') }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -71,7 +164,7 @@
         <div class="flex justify-between items-center mb-4">
           <h2 class="font-heading text-2xl">{{ $t('sessions.teacherRow') }} — {{ $t('meetings.title') }}</h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <RouterLink
             v-for="meeting in meetings"
             :key="meeting.id"
@@ -79,7 +172,7 @@
             class="bg-surface rounded-xl p-6 border border-border hover:border-primary transition-colors"
           >
             <h3 class="font-heading text-xl mb-2">
-              {{ $t('meetings.meeting') }} {{ meeting.meeting_number }}
+              {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
             </h3>
             <p class="text-sm text-text-secondary mb-2">
               {{ meeting.meeting_date ? formatDate(meeting.meeting_date) : $t('common.notSet') }}
@@ -94,194 +187,118 @@
         </div>
       </div>
 
-      <!-- Access Codes & Share Links Section -->
+      <!-- Share Links Section -->
       <div class="mb-8">
-        <h2 class="font-heading text-2xl mb-4">{{ $t('sessions.accessCodes') }}</h2>
+        <h2 class="font-heading text-2xl mb-4">{{ $t('sessions.shareLinks') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          <!-- Student Access Code -->
+          <!-- Student share links -->
           <div class="bg-surface rounded-xl p-6 border border-border">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-heading text-lg">{{ $t('sessions.studentAccessCode') }}</h3>
-              <span
-                v-if="session.student_code_locked"
-                class="px-2 py-1 rounded-full text-xs font-semibold bg-error text-white"
+            <h3 class="font-heading text-lg mb-3">{{ $t('sessions.studentRow') }}</h3>
+            <div v-if="!session.student_access_code" class="text-sm text-text-tertiary">
+              {{ $t('sessions.noCodeYet') }}
+            </div>
+            <div v-else class="space-y-2">
+              <div
+                v-for="meeting in meetings"
+                :key="'sl-' + meeting.id"
+                class="flex items-center gap-2"
               >
-                {{ $t('sessions.codeLocked') }}
-              </span>
-            </div>
-
-            <!-- Locked warning -->
-            <div
-              v-if="session.student_code_locked"
-              class="bg-error/10 border border-error rounded-lg p-3 mb-4"
-            >
-              <p class="text-sm text-error">
-                {{ $t('sessions.codeLockedWarning', { role: $t('sessions.studentRow') }) }}
-              </p>
-            </div>
-
-            <!-- Current code display -->
-            <div v-if="session.student_access_code && !session.student_code_locked" class="mb-4">
-              <div class="flex items-center gap-2 bg-surface-elevated rounded-lg p-3 border border-border">
-                <span class="font-mono text-lg font-bold tracking-widest flex-1">{{ session.student_access_code }}</span>
+                <span class="text-xs text-text-secondary flex-1 truncate">
+                  {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
+                </span>
                 <button
                   type="button"
-                  @click="copyToClipboard(session.student_access_code)"
-                  class="p-2 text-text-tertiary hover:text-text-primary rounded-lg hover:bg-hover transition-colors"
+                  class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
+                  @click="copyMeetingLink(meeting.student_token, 'student')"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
+                  {{ $t('sessions.copyLink') }}
                 </button>
-              </div>
-              <p class="text-xs text-text-tertiary mt-1">
-                {{ $t('sessions.attemptsLeft', { count: 10 - (session.student_code_attempts || 0) }) }}
-              </p>
-            </div>
-
-            <div v-else-if="!session.student_access_code && !session.student_code_locked" class="mb-4">
-              <p class="text-sm text-text-tertiary">{{ $t('sessions.noCodeYet') }}</p>
-            </div>
-
-            <button
-              type="button"
-              @click="handleGenerateStudentCode"
-              class="w-full px-4 py-2 bg-primary text-primary-text rounded-lg font-semibold text-sm hover:bg-primary-hover transition-colors"
-            >
-              {{ session.student_access_code || session.student_code_locked ? $t('sessions.regenerateAccessCode') : $t('sessions.generateAccessCode') }}
-            </button>
-
-            <!-- Student share links -->
-            <div v-if="session.student_access_code && !session.student_code_locked" class="mt-4">
-              <p class="text-xs text-text-tertiary font-medium mb-2">{{ $t('sessions.shareLinks') }}</p>
-              <div class="space-y-2">
-                <div
-                  v-for="meeting in meetings"
-                  :key="'sl-' + meeting.id"
-                  class="flex items-center gap-2"
-                >
-                  <span class="text-xs text-text-secondary flex-1 truncate">
-                    {{ $t('meetings.meeting') }} {{ meeting.meeting_number }}
-                  </span>
-                  <button
-                    type="button"
-                    @click="copyMeetingLink(meeting.student_token, 'student')"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
-                  >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                    {{ $t('sessions.copyLink') }}
-                  </button>
-                </div>
               </div>
             </div>
           </div>
-
-          <!-- Reviewer Access Code -->
+          <!-- Reviewer share links -->
           <div class="bg-surface rounded-xl p-6 border border-border">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-heading text-lg">{{ $t('sessions.reviewerAccessCode') }}</h3>
-              <span
-                v-if="session.reviewer_code_locked"
-                class="px-2 py-1 rounded-full text-xs font-semibold bg-error text-white"
+            <h3 class="font-heading text-lg mb-3">{{ $t('sessions.reviewerRow') }}</h3>
+            <div v-if="!session.reviewer_access_code" class="text-sm text-text-tertiary">
+              {{ $t('sessions.noCodeYet') }}
+            </div>
+            <div v-else class="space-y-2">
+              <div
+                v-for="meeting in meetings"
+                :key="'rl-' + meeting.id"
+                class="flex items-center gap-2"
               >
-                {{ $t('sessions.codeLocked') }}
-              </span>
-            </div>
-
-            <!-- Locked warning -->
-            <div
-              v-if="session.reviewer_code_locked"
-              class="bg-error/10 border border-error rounded-lg p-3 mb-4"
-            >
-              <p class="text-sm text-error">
-                {{ $t('sessions.codeLockedWarning', { role: $t('sessions.reviewerRow') }) }}
-              </p>
-            </div>
-
-            <!-- Current code display -->
-            <div v-if="session.reviewer_access_code && !session.reviewer_code_locked" class="mb-4">
-              <div class="flex items-center gap-2 bg-surface-elevated rounded-lg p-3 border border-border">
-                <span class="font-mono text-lg font-bold tracking-widest flex-1">{{ session.reviewer_access_code }}</span>
+                <span class="text-xs text-text-secondary flex-1 truncate">
+                  {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
+                </span>
                 <button
                   type="button"
-                  @click="copyToClipboard(session.reviewer_access_code)"
-                  class="p-2 text-text-tertiary hover:text-text-primary rounded-lg hover:bg-hover transition-colors"
+                  class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
+                  @click="copyMeetingLink(meeting.reviewer_token, 'reviewer')"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
+                  {{ $t('sessions.copyLink') }}
                 </button>
-              </div>
-              <p class="text-xs text-text-tertiary mt-1">
-                {{ $t('sessions.attemptsLeft', { count: 10 - (session.reviewer_code_attempts || 0) }) }}
-              </p>
-            </div>
-
-            <div v-else-if="!session.reviewer_access_code && !session.reviewer_code_locked" class="mb-4">
-              <p class="text-sm text-text-tertiary">{{ $t('sessions.noCodeYet') }}</p>
-            </div>
-
-            <button
-              type="button"
-              @click="handleGenerateReviewerCode"
-              class="w-full px-4 py-2 bg-primary text-primary-text rounded-lg font-semibold text-sm hover:bg-primary-hover transition-colors"
-            >
-              {{ session.reviewer_access_code || session.reviewer_code_locked ? $t('sessions.regenerateAccessCode') : $t('sessions.generateAccessCode') }}
-            </button>
-
-            <!-- Reviewer share links -->
-            <div v-if="session.reviewer_access_code && !session.reviewer_code_locked" class="mt-4">
-              <p class="text-xs text-text-tertiary font-medium mb-2">{{ $t('sessions.shareLinks') }}</p>
-              <div class="space-y-2">
-                <div
-                  v-for="meeting in meetings"
-                  :key="'rl-' + meeting.id"
-                  class="flex items-center gap-2"
-                >
-                  <span class="text-xs text-text-secondary flex-1 truncate">
-                    {{ $t('meetings.meeting') }} {{ meeting.meeting_number }}
-                  </span>
-                  <button
-                    type="button"
-                    @click="copyMeetingLink(meeting.reviewer_token, 'reviewer')"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
-                  >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                    {{ $t('sessions.copyLink') }}
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- End Grade Section -->
-      <div class="mb-8">
-        <h2 class="font-heading text-2xl mb-4">{{ $t('endGrade.title') }}</h2>
-        <RouterLink
-          :to="`/session/${session.id}/end-grade`"
-          class="block bg-surface rounded-xl p-6 border border-border hover:border-primary transition-colors"
-        >
-          <div class="flex justify-between items-center">
-            <p class="text-text-secondary">{{ $t('endGrade.create') }}</p>
-            <svg class="w-6 h-6 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </RouterLink>
-      </div>
     </div>
+
+    <!-- Email Template Modal -->
+    <Teleport to="body">
+      <div
+        v-if="emailModal.show"
+        class="fixed inset-0 z-50 flex items-center justify-center"
+      >
+        <div class="absolute inset-0 bg-black/50" @click="emailModal.show = false"></div>
+        <div class="relative bg-surface rounded-xl border border-border shadow-xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+          <div class="flex items-center justify-between p-4 border-b border-border">
+            <h3 class="font-heading text-lg">{{ $t('sessions.emailTemplate') }}</h3>
+            <button
+              type="button"
+              class="p-1 text-text-tertiary hover:text-text-primary rounded hover:bg-hover transition-colors"
+              @click="emailModal.show = false"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-4 overflow-y-auto flex-1">
+            <pre class="whitespace-pre-wrap text-sm text-text-primary font-sans leading-relaxed bg-surface-elevated rounded-lg p-4 border border-border">{{ emailModal.body }}</pre>
+          </div>
+          <div class="flex justify-end gap-2 p-4 border-t border-border">
+            <button
+              type="button"
+              class="px-4 py-2 text-sm text-text-secondary hover:text-text-primary rounded-lg hover:bg-hover transition-colors"
+              @click="emailModal.show = false"
+            >
+              {{ $t('common.cancel') }}
+            </button>
+            <button
+              type="button"
+              class="px-4 py-2 bg-primary text-primary-text rounded-lg font-semibold text-sm hover:bg-primary-hover transition-colors"
+              @click="copyEmailBody"
+            >
+              {{ $t('sessions.copyEmail') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </AppLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSessionsStore } from '@/stores/sessions'
@@ -296,6 +313,11 @@ const meetingsStore = useMeetingsStore()
 const loading = ref(true)
 const session = ref(null)
 const meetings = ref([])
+
+const emailModal = reactive({
+  show: false,
+  body: '',
+})
 
 onMounted(async () => {
   const sessionId = route.params.id
@@ -332,6 +354,29 @@ function copyMeetingLink(token, role) {
   const baseUrl = window.location.origin
   const path = role === 'student' ? `/m/s/${token}` : `/m/r/${token}`
   navigator.clipboard.writeText(baseUrl + path)
+}
+
+function buildMeetingLinks(role) {
+  const baseUrl = window.location.origin
+  return meetings.value.map(m => {
+    const token = role === 'student' ? m.student_token : m.reviewer_token
+    const url = role === 'student' ? `${baseUrl}/m/s/${token}` : `${baseUrl}/m/r/${token}`
+    const label = m.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${m.meeting_number}`
+    return `${label}: ${url}`
+  }).join('\n')
+}
+
+function openEmailModal(role) {
+  const code = role === 'student' ? session.value.student_access_code : session.value.reviewer_access_code
+  const links = buildMeetingLinks(role)
+  const bodyKey = role === 'student' ? 'sessions.emailBodyStudent' : 'sessions.emailBodyReviewer'
+  emailModal.body = $t(bodyKey, { code, links })
+  emailModal.show = true
+}
+
+function copyEmailBody() {
+  navigator.clipboard.writeText(emailModal.body)
+  emailModal.show = false
 }
 
 function formatDate(dateString) {
