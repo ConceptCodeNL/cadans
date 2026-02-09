@@ -143,7 +143,9 @@
     "llmNotConfigured": "De AI-assistent is nog niet geconfigureerd. Neem contact op met de beheerder.",
     "llmGenericError": "Er ging iets mis bij het ophalen van het AI-antwoord.",
     "saveShortcutMac": "Sneltoets: Cmd + Enter om op te slaan",
-    "saveShortcutWin": "Sneltoets: Ctrl + Enter om op te slaan"
+    "saveShortcutWin": "Sneltoets: Ctrl + Enter om op te slaan",
+    "llmShortcutMac": "Sneltoets: Cmd + Enter om je vraag te versturen",
+    "llmShortcutWin": "Sneltoets: Ctrl + Enter om je vraag te versturen"
   },
   "publicAccess": {
     "title": "Gesprek Bekijken",

@@ -143,7 +143,9 @@
     "llmNotConfigured": "The AI assistant is not configured yet. Please contact your administrator.",
     "llmGenericError": "Something went wrong while contacting the AI assistant.",
     "saveShortcutMac": "Shortcut: Cmd + Enter to save",
-    "saveShortcutWin": "Shortcut: Ctrl + Enter to save"
+    "saveShortcutWin": "Shortcut: Ctrl + Enter to save",
+    "llmShortcutMac": "Shortcut: Cmd + Enter to send your question",
+    "llmShortcutWin": "Shortcut: Ctrl + Enter to send your question"
   },
   "publicAccess": {
     "title": "View Conversation",

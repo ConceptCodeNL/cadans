@@ -450,29 +450,34 @@
             </div>
 
             <!-- Input -->
-            <div class="flex items-end gap-2">
-              <textarea
-                v-model="llmInput"
-                rows="2"
-                :placeholder="$t('meetings.llmPlaceholder')"
-                class="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                @keydown.meta.enter.prevent="sendLlmMessage"
-                @keydown.ctrl.enter.prevent="sendLlmMessage"
-              />
-              <button
-                type="button"
-                @click="sendLlmMessage"
-                :disabled="llmLoading || !llmInput.trim()"
-                :class="[
-                  'px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors disabled:opacity-50',
-                  'bg-primary text-primary-text hover:bg-primary-dark'
-                ]"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7-9 7-9-7z" />
-                </svg>
-                <span>{{ llmLoading ? $t('common.loading') : $t('meetings.llmSend') }}</span>
-              </button>
+            <div class="flex flex-col gap-1">
+              <div class="flex items-end gap-2">
+                <textarea
+                  v-model="llmInput"
+                  rows="2"
+                  :placeholder="$t('meetings.llmPlaceholder')"
+                  class="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  @keydown.meta.enter.prevent="sendLlmMessage"
+                  @keydown.ctrl.enter.prevent="sendLlmMessage"
+                />
+                <button
+                  type="button"
+                  @click="sendLlmMessage"
+                  :disabled="llmLoading || !llmInput.trim()"
+                  :class="[
+                    'px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors disabled:opacity-50',
+                    'bg-primary text-primary-text hover:bg-primary-dark'
+                  ]"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7-9 7-9-7z" />
+                  </svg>
+                  <span>{{ llmLoading ? $t('common.loading') : $t('meetings.llmSend') }}</span>
+                </button>
+              </div>
+              <p class="text-[11px] leading-tight text-text-tertiary text-right">
+                {{ isMac ? $t('meetings.llmShortcutMac') : $t('meetings.llmShortcutWin') }}
+              </p>
             </div>
 
             <div class="flex justify-between items-center mt-3 gap-3">
@@ -1010,10 +1015,18 @@ async function sendLlmMessage() {
   llmInput.value = ''
 
   try {
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
     const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(supabaseAnonKey
+          ? {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseAnonKey}`,
+            }
+          : {}),
       },
       body: JSON.stringify(payload),
     })

@@ -14,16 +14,33 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 
 const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY")
 
+// Basic CORS headers to allow calls from your frontend (localhost:3000 or production).
+// If you want to lock this down further, replace "*" with your exact origin.
+const corsHeaders: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+}
+
 serve(async (req: Request): Promise<Response> => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
+  }
+
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 })
+    return new Response("Method not allowed", {
+      status: 405,
+      headers: corsHeaders,
+    })
   }
 
   if (!GROQ_API_KEY) {
-    return jsonResponse(
-      { error: "GROQ_API_KEY is not configured on the server." },
-      500,
-    )
+      return jsonResponse(
+        { error: "GROQ_API_KEY is not configured on the server." },
+        500,
+      )
   }
 
   try {
@@ -87,7 +104,10 @@ serve(async (req: Request): Promise<Response> => {
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...corsHeaders,
+    },
   })
 }
 
