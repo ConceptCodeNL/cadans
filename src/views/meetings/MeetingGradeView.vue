@@ -323,13 +323,27 @@
 
         <!-- General Notes -->
         <div>
-          <label class="block text-sm font-medium mb-2">
-            {{ $t('meetings.generalNotes') }}
-          </label>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-sm font-medium">
+              {{ $t('meetings.generalNotes') }}
+            </label>
+            <button
+              type="button"
+              @click="openLlmModal"
+              class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border border-border bg-surface hover:bg-hover transition-colors"
+            >
+              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              <span>{{ $t('meetings.llmAssistant') }}</span>
+            </button>
+          </div>
           <textarea
             v-model="formData.generalNotes"
             rows="4"
             class="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            @keydown.meta.enter.prevent="handleSaveDraft"
+            @keydown.ctrl.enter.prevent="handleSaveDraft"
           />
         </div>
 
@@ -342,18 +356,23 @@
 
     <!-- Floating Buttons -->
     <div class="fixed bottom-6 right-6 z-40 flex gap-3 items-center">
-      <!-- Save Draft Button -->
-      <button
-        type="button"
-        @click="handleSaveDraft"
-        :disabled="saving"
-        class="px-5 py-3 bg-surface-elevated border border-border rounded-full font-semibold shadow-lg hover:bg-hover hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-        </svg>
-        {{ saving ? $t('common.loading') : $t('meetings.saveDraft') }}
-      </button>
+      <!-- Save Draft Button + shortcut hint -->
+      <div class="flex flex-col items-center">
+        <button
+          type="button"
+          @click="handleSaveDraft"
+          :disabled="saving"
+          class="px-5 py-3 bg-surface-elevated border border-border rounded-full font-semibold shadow-lg hover:bg-hover hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+          </svg>
+          {{ saving ? $t('common.loading') : $t('meetings.saveDraft') }}
+        </button>
+        <p class="mt-1 text-[11px] leading-tight text-text-tertiary">
+          {{ isMac ? $t('meetings.saveShortcutMac') : $t('meetings.saveShortcutWin') }}
+        </p>
+      </div>
       <!-- Submit Button -->
       <button
         type="button"
@@ -372,6 +391,111 @@
         {{ submitting ? $t('common.loading') : $t('meetings.submit') }}
       </button>
     </div>
+
+    <!-- LLM Assistant Modal -->
+    <Transition name="modal">
+      <div
+        v-if="showLlmModal"
+        class="fixed inset-0 flex items-center justify-center z-50 p-4"
+        style="background-color: rgba(0,0,0,0.5);"
+        @click.self="closeLlmModal"
+      >
+        <Transition name="modal-content">
+          <div
+            v-if="showLlmModal"
+            class="rounded-2xl p-6 max-w-2xl w-full shadow-xl bg-surface-elevated border border-border flex flex-col max-h-[80vh]"
+          >
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h2 class="font-heading text-2xl">
+                  {{ $t('meetings.llmAssistant') }}
+                </h2>
+                <p class="text-sm text-text-secondary mt-1">
+                  {{ $t('meetings.llmAssistantDescription') }}
+                </p>
+              </div>
+              <button
+                type="button"
+                @click="closeLlmModal"
+                class="p-2 rounded-full hover:bg-hover text-text-secondary hover:text-text-primary transition-colors"
+                :aria-label="$t('common.close')"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Messages -->
+            <div class="flex-1 overflow-y-auto space-y-3 mb-4 border border-border rounded-lg p-3 bg-surface">
+              <div v-if="visibleLlmMessages.length === 0" class="text-sm text-text-tertiary">
+                {{ $t('meetings.llmEmpty') }}
+              </div>
+              <div
+                v-for="(msg, idx) in visibleLlmMessages"
+                :key="idx"
+                :class="[
+                  'text-sm px-3 py-2 rounded-lg max-w-full',
+                  msg.role === 'assistant'
+                    ? 'bg-primary/10 border border-primary text-text-primary self-start'
+                    : 'bg-surface-elevated border border-border text-text-primary self-end'
+                ]"
+              >
+                <p class="whitespace-pre-line">{{ msg.content }}</p>
+              </div>
+            </div>
+
+            <div v-if="llmError" class="text-sm text-error mb-2">
+              {{ llmError }}
+            </div>
+
+            <!-- Input -->
+            <div class="flex items-end gap-2">
+              <textarea
+                v-model="llmInput"
+                rows="2"
+                :placeholder="$t('meetings.llmPlaceholder')"
+                class="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                @keydown.meta.enter.prevent="sendLlmMessage"
+                @keydown.ctrl.enter.prevent="sendLlmMessage"
+              />
+              <button
+                type="button"
+                @click="sendLlmMessage"
+                :disabled="llmLoading || !llmInput.trim()"
+                :class="[
+                  'px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors disabled:opacity-50',
+                  'bg-primary text-primary-text hover:bg-primary-dark'
+                ]"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-7 9 7-9 7-9-7z" />
+                </svg>
+                <span>{{ llmLoading ? $t('common.loading') : $t('meetings.llmSend') }}</span>
+              </button>
+            </div>
+
+            <div class="flex justify-between items-center mt-3 gap-3">
+              <button
+                type="button"
+                class="text-xs text-text-secondary hover:text-text-primary underline"
+                @click="useLlmSummary"
+                :disabled="!lastAssistantMessage"
+              >
+                {{ $t('meetings.llmUseSummary') }}
+              </button>
+              <button
+                type="button"
+                class="text-xs text-text-secondary hover:text-text-primary"
+                @click="closeLlmModal"
+              >
+                {{ $t('common.close') }}
+              </button>
+            </div>
+          </div>
+        </Transition>
+      </div>
+    </Transition>
 
     <!-- Tip/Top Modal -->
     <Transition name="modal">
@@ -481,6 +605,14 @@ const error = ref('')
 const meeting = ref(null)
 const session = ref(null)
 const reviewerGrades = ref(null)
+const isMac = ref(false)
+
+// LLM assistant state
+const showLlmModal = ref(false)
+const llmMessages = ref([]) // { role: 'system' | 'assistant' | 'user', content: string }[]
+const llmInput = ref('')
+const llmLoading = ref(false)
+const llmError = ref('')
 
 // Score level definitions
 const scoreLevels = [
@@ -543,6 +675,10 @@ const formData = ref({
 onMounted(async () => {
   const sessionId = route.params.sessionId
   const meetingId = route.params.meetingId
+  if (typeof navigator !== 'undefined') {
+    const platform = navigator.platform || navigator.userAgent || ''
+    isMac.value = /Mac|iPhone|iPad|iPod/i.test(platform)
+  }
   
   await sessionsStore.fetchSession(sessionId)
   session.value = sessionsStore.currentSession
@@ -763,6 +899,160 @@ function sanitizeGrades() {
     sanitized[key] = (!isNaN(rounded) && rounded >= 1 && rounded <= 10) ? rounded : null
   }
   return sanitized
+}
+
+const visibleLlmMessages = computed(() =>
+  llmMessages.value.filter(m => m.role !== 'system')
+)
+
+const lastAssistantMessage = computed(() => {
+  for (let i = llmMessages.value.length - 1; i >= 0; i--) {
+    const msg = llmMessages.value[i]
+    if (msg.role === 'assistant') return msg
+  }
+  return null
+})
+
+function buildLlmSystemPrompt() {
+  const parts = []
+  parts.push(
+    'You are an AI assistant helping a teacher write strong, concrete general notes for an internship/graduation evaluation.'
+  )
+  parts.push(
+    'You are given the competencies with their descriptions, scores, and any tips/tops. Ask short, targeted follow-up questions to clarify the situation and arrive at a solid, well-structured summary.'
+  )
+  parts.push(
+    'Avoid personal data (names, addresses, phone numbers). Focus on behavior, performance, and development of the student.'
+  )
+  parts.push(
+    'When you feel you have enough information, answer with a concise Dutch summary that the teacher can paste as the “Algemene Notities” / general notes.'
+  )
+  const contextLines = []
+  if (session.value && meeting.value) {
+    contextLines.push(`Session type: ${session.value.type}`)
+    contextLines.push(
+      `Meeting: ${meeting.value.is_end_grade ? 'Eindbeoordeling' : 'Gesprek'} ${
+        meeting.value.meeting_number || ''
+      }`
+    )
+  }
+  contextLines.push('Competencies and current data:')
+  visibleCompetencies.value.forEach(comp => {
+    const name = localized(comp.name)
+    const description = localized(comp.description)
+    const score = formData.value.competencyScores[comp.id]
+    const grade = formData.value.competencyGrades[comp.id]
+    contextLines.push(
+      `- ${name} (weight ${comp.weight || 1}x)${
+        comp.endGradeOnly ? ' [end grade only]' : ''
+      }`
+    )
+    if (description) {
+      contextLines.push(`  Description: ${description}`)
+    }
+    if (score != null) {
+      contextLines.push(`  Score (1-5): ${score}`)
+    }
+    if (grade != null) {
+      contextLines.push(`  Numeric grade (1-10): ${grade}`)
+    }
+    const tipsTops = formData.value.competencyTipsTops[comp.id] || []
+    if (tipsTops.length) {
+      contextLines.push('  Tips/Tops:')
+      tipsTops.forEach(item => {
+        contextLines.push(`    - [${item.type}] ${item.text}`)
+      })
+    }
+  })
+  if (formData.value.generalNotes) {
+    contextLines.push(
+      `Existing general notes from teacher: ${formData.value.generalNotes}`
+    )
+  }
+
+  return `${parts.join('\n')}\n\nContext:\n${contextLines.join('\n')}`
+}
+
+function openLlmModal() {
+  llmError.value = ''
+  showLlmModal.value = true
+  if (llmMessages.value.length === 0) {
+    llmMessages.value.push({
+      role: 'system',
+      content: buildLlmSystemPrompt(),
+    })
+  }
+}
+
+function closeLlmModal() {
+  showLlmModal.value = false
+}
+
+async function sendLlmMessage() {
+  if (!llmInput.value.trim() || llmLoading.value) return
+
+  const endpoint = import.meta.env.VITE_LLM_NOTES_ENDPOINT
+  if (!endpoint) {
+    llmError.value = $t('meetings.llmNotConfigured')
+    return
+  }
+
+  llmMessages.value.push({
+    role: 'user',
+    content: llmInput.value.trim(),
+  })
+  const payload = {
+    messages: llmMessages.value,
+  }
+
+  llmLoading.value = true
+  llmError.value = ''
+  llmInput.value = ''
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      throw new Error(`LLM request failed with status ${res.status}`)
+    }
+
+    const data = await res.json()
+    if (Array.isArray(data.messages)) {
+      data.messages.forEach(msg => {
+        if (msg && msg.role && msg.content) {
+          llmMessages.value.push({
+            role: msg.role,
+            content: msg.content,
+          })
+        }
+      })
+    } else if (data.message && data.message.content) {
+      llmMessages.value.push({
+        role: data.message.role || 'assistant',
+        content: data.message.content,
+      })
+    }
+  } catch (e) {
+    llmError.value =
+      e && e.message
+        ? e.message
+        : $t('meetings.llmGenericError')
+  } finally {
+    llmLoading.value = false
+  }
+}
+
+function useLlmSummary() {
+  const last = lastAssistantMessage.value
+  if (!last) return
+  formData.value.generalNotes = last.content
+  showLlmModal.value = false
 }
 
 function buildMeetingData(status) {

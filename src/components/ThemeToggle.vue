@@ -19,3 +19,4 @@ import { useTheme } from '@/composables/useTheme'
 const { theme, toggleTheme } = useTheme()
 </script>
 
+

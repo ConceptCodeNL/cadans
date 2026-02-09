@@ -30,3 +30,4 @@ SELECT p.id, p.role, u.email
 FROM profiles p 
 JOIN auth.users u ON u.id = p.id;
 
+

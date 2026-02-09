@@ -133,7 +133,17 @@
     "competencyInfo": "Wat wordt verwacht? (Gebruik voor de tips en tops)",
     "endGrade": "Eindbeoordeling",
     "competencyGrade": "Cijfer",
-    "averageGrade": "Gemiddeld Cijfer"
+    "averageGrade": "Gemiddeld Cijfer",
+    "llmAssistant": "AI-assistent voor notities",
+    "llmAssistantDescription": "Voer een kort gesprek met de AI om samen tot sterke algemene notities te komen op basis van de competenties en scores.",
+    "llmEmpty": "Start het gesprek met een vraag of beschrijving van de student. De AI zal gerichte vragen terugstellen.",
+    "llmPlaceholder": "Beschrijf kort de situatie of stel je vraag aan de AI...",
+    "llmSend": "Versturen",
+    "llmUseSummary": "Gebruik laatste antwoord als algemene notities",
+    "llmNotConfigured": "De AI-assistent is nog niet geconfigureerd. Neem contact op met de beheerder.",
+    "llmGenericError": "Er ging iets mis bij het ophalen van het AI-antwoord.",
+    "saveShortcutMac": "Sneltoets: Cmd + Enter om op te slaan",
+    "saveShortcutWin": "Sneltoets: Ctrl + Enter om op te slaan"
   },
   "publicAccess": {
     "title": "Gesprek Bekijken",

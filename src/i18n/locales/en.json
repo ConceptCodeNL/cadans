@@ -133,7 +133,17 @@
     "competencyInfo": "What is expected?",
     "endGrade": "End Grade",
     "competencyGrade": "Grade",
-    "averageGrade": "Average Grade"
+    "averageGrade": "Average Grade",
+    "llmAssistant": "AI assistant for notes",
+    "llmAssistantDescription": "Chat briefly with the AI to co-create strong general notes based on the competencies and scores.",
+    "llmEmpty": "Start the conversation with a question or short description of the student. The AI will ask targeted follow-up questions.",
+    "llmPlaceholder": "Briefly describe the situation or ask your question to the AI...",
+    "llmSend": "Send",
+    "llmUseSummary": "Use last answer as general notes",
+    "llmNotConfigured": "The AI assistant is not configured yet. Please contact your administrator.",
+    "llmGenericError": "Something went wrong while contacting the AI assistant.",
+    "saveShortcutMac": "Shortcut: Cmd + Enter to save",
+    "saveShortcutWin": "Shortcut: Ctrl + Enter to save"
   },
   "publicAccess": {
     "title": "View Conversation",

@@ -41,3 +41,4 @@ CREATE POLICY "Authenticated users can delete students"
 -- If this returns 0 rows, that's the problem
 SELECT id, role FROM profiles WHERE id = auth.uid();
 
+

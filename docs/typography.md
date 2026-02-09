@@ -253,3 +253,4 @@ h1, h2, h3, h4, h5, h6 {
 - [Manrope on Google Fonts](https://fonts.google.com/specimen/Manrope)
 - [Font Loading Best Practices](https://web.dev/font-best-practices/)
 
+

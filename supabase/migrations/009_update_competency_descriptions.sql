@@ -72,3 +72,4 @@ MATE VAN ZELFSTANDIGHEID
 • Student handelt zelfstandig professioneel en vraagt proactief om feedback.'
 WHERE name = 'Professional attitude' AND is_system_default = TRUE;
 
+

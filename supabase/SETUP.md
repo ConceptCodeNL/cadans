@@ -169,3 +169,4 @@ Before deploying to production:
 - [Supabase Auth Guide](https://supabase.com/docs/guides/auth)
 - [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
 
+

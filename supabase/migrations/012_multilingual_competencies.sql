@@ -93,3 +93,4 @@ LEVEL OF INDEPENDENCE
 • Student acts independently and professionally and proactively asks for feedback.'
 WHERE name = 'Professional attitude' AND is_system_default = TRUE;
 
+

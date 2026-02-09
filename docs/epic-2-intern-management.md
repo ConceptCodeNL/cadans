@@ -110,3 +110,4 @@ Enable HR managers and supervisors to create, assign, and manage intern profiles
 - Audit log for profile changes
 - Consider adding profile photo upload
 
+
