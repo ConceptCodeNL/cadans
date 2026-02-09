@@ -23,12 +23,21 @@
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="font-heading text-6xl mb-4">CADANS</h1>
         <p class="text-xl text-text-secondary mb-8">{{ $t('app.tagline') }}</p>
-        <div class="flex gap-4 justify-center">
+        <div class="flex gap-4 justify-center items-center">
           <RouterLink 
             to="/register" 
             class="px-8 py-3 bg-primary text-primary-text rounded-lg font-semibold text-lg hover:bg-primary-hover transition-colors"
           >
-            {{ $t('navigation.home') === 'Home' ? 'Get Started' : 'Aan de slag' }}
+            {{ $t('navigation.home') === 'Home' ? 'Register now' : 'Nu registreren' }}
+          </RouterLink>
+          <span class="text-text-secondary text-sm">
+            {{ $t('navigation.home') === 'Home' ? 'or' : 'of' }}
+          </span>
+          <RouterLink 
+            to="/login" 
+            class="px-8 py-3 bg-surface text-text-primary border border-border rounded-lg font-semibold text-lg hover:bg-hover transition-colors"
+          >
+            {{ $t('navigation.home') === 'Home' ? 'Login' : 'Inloggen' }}
           </RouterLink>
         </div>
       </div>

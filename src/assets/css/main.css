@@ -63,7 +63,8 @@
   --color-primary-active: #34d399;
   --color-primary-light: #064e3b;
   --color-primary-dark: #10b981;
-  --color-primary-text: #a7f3d0;
+  /* Use a much darker text on primary for better contrast in dark mode */
+  --color-primary-text: #022c22;
   
   --color-bg: #0f172a;
   --color-surface: #1e293b;

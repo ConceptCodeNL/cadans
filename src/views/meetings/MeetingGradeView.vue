@@ -131,12 +131,12 @@
               <p class="font-heading text-2xl">{{ averageGrade != null ? averageGrade : '–' }}</p>
             </div>
           </div>
-          <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
               v-for="comp in visibleCompetencies"
               :key="comp.id"
               :class="[
-                'bg-surface rounded-xl p-6',
+                'bg-surface rounded-xl p-6 h-full',
                 comp.endGradeOnly ? 'border-2 border-primary' : 'border border-border'
               ]"
             >
@@ -331,21 +331,21 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- General Notes -->
-        <div>
-          <label class="block text-sm font-medium mb-2">
-            {{ $t('meetings.generalNotes') }}
-          </label>
-          <textarea
-            v-model="formData.generalNotes"
-            rows="4"
-            class="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            @keydown.meta.enter.prevent="handleSaveDraft"
-            @keydown.ctrl.enter.prevent="handleSaveDraft"
-          />
+            <!-- General Notes as card -->
+            <div class="bg-surface rounded-xl p-6 border border-border h-full flex flex-col">
+              <label class="block text-sm font-medium mb-2">
+                {{ $t('meetings.generalNotes') }}
+              </label>
+              <textarea
+                v-model="formData.generalNotes"
+                rows="4"
+                class="w-full flex-1 min-h-[180px] px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                @keydown.meta.enter.prevent="handleSaveDraft"
+                @keydown.ctrl.enter.prevent="handleSaveDraft"
+              />
+            </div>
+          </div>
         </div>
 
         <div v-if="error" class="text-error text-sm">
@@ -977,11 +977,28 @@ function buildLlmSystemPrompt() {
 function openLlmModal() {
   llmError.value = ''
   showLlmModal.value = true
+
+  const systemPrompt = buildLlmSystemPrompt()
+
   if (llmMessages.value.length === 0) {
     llmMessages.value.push({
       role: 'system',
-      content: buildLlmSystemPrompt(),
+      content: systemPrompt,
     })
+  } else {
+    // Ensure the latest grades and tips/tops are reflected in the system message
+    const systemIndex = llmMessages.value.findIndex(m => m.role === 'system')
+    if (systemIndex !== -1) {
+      llmMessages.value[systemIndex] = {
+        ...llmMessages.value[systemIndex],
+        content: systemPrompt,
+      }
+    } else {
+      llmMessages.value.unshift({
+        role: 'system',
+        content: systemPrompt,
+      })
+    }
   }
 }
 

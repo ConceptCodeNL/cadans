@@ -1,52 +1,76 @@
 import { ref, watch, onMounted } from 'vue'
 
-export function useTheme() {
-  const theme = ref('light')
+// Shared theme state across the whole app
+const theme = ref('light')
+let initialized = false
+let mediaListenerAttached = false
 
-  // Load theme from localStorage or system preference
-  onMounted(() => {
-    const saved = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    theme.value = saved || (prefersDark ? 'dark' : 'light')
-    applyTheme(theme.value)
-  })
+function applyTheme(newTheme) {
+  if (typeof document === 'undefined') return
+  const root = document.documentElement
+  if (newTheme === 'dark') {
+    root.classList.add('dark')
+    root.setAttribute('data-theme', 'dark')
+  } else {
+    root.classList.remove('dark')
+    root.setAttribute('data-theme', 'light')
+  }
+}
 
-  // Watch for system preference changes
-  if (typeof window !== 'undefined') {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+function initThemeOnce() {
+  if (initialized || typeof window === 'undefined') return
+
+  const saved = localStorage.getItem('theme')
+  const prefersDark = window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+
+  theme.value = saved || (prefersDark ? 'dark' : 'light')
+  applyTheme(theme.value)
+  initialized = true
+
+  if (!mediaListenerAttached && window.matchMedia) {
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e) => {
       if (!localStorage.getItem('theme')) {
         theme.value = e.matches ? 'dark' : 'light'
         applyTheme(theme.value)
       }
-    })
-  }
-
-  function applyTheme(newTheme) {
-    const root = document.documentElement
-    if (newTheme === 'dark') {
-      root.classList.add('dark')
-      root.setAttribute('data-theme', 'dark')
-    } else {
-      root.classList.remove('dark')
-      root.setAttribute('data-theme', 'light')
     }
+    if (media.addEventListener) {
+      media.addEventListener('change', handler)
+    } else if (media.addListener) {
+      // Safari fallback
+      media.addListener(handler)
+    }
+    mediaListenerAttached = true
   }
+}
 
-  function toggleTheme() {
-    theme.value = theme.value === 'light' ? 'dark' : 'light'
+function toggleTheme() {
+  theme.value = theme.value === 'light' ? 'dark' : 'light'
+  if (typeof window !== 'undefined') {
     localStorage.setItem('theme', theme.value)
-    applyTheme(theme.value)
   }
+  applyTheme(theme.value)
+}
 
-  function setTheme(newTheme) {
-    theme.value = newTheme
+function setTheme(newTheme) {
+  theme.value = newTheme
+  if (typeof window !== 'undefined') {
     localStorage.setItem('theme', newTheme)
-    applyTheme(newTheme)
   }
+  applyTheme(newTheme)
+}
 
-  watch(theme, (newTheme) => {
-    applyTheme(newTheme)
+// Keep DOM theme in sync whenever the ref changes
+watch(theme, (newTheme) => {
+  applyTheme(newTheme)
+})
+
+export function useTheme() {
+  // Ensure initialization happens once on first composable use
+  onMounted(() => {
+    initThemeOnce()
   })
 
   return {
@@ -55,5 +79,4 @@ export function useTheme() {
     setTheme,
   }
 }
-
 

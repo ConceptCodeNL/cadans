@@ -22,7 +22,8 @@
     "no": "Nee",
     "optional": "Optioneel",
     "select": "Selecteren...",
-    "notSet": "Niet ingesteld"
+    "notSet": "Niet ingesteld",
+    "feedback": "Feedback"
   },
   "auth": {
     "login": "Inloggen",
@@ -96,7 +97,8 @@
     "emailSubjectReviewer": "Uitnodiging: Beoordeel de gesprekken als tweede beoordelaar",
     "emailBodyStudent": "Beste student,\n\nJe bent uitgenodigd om je gesprekken te beoordelen in CADANS.\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen en je beoordeling in te vullen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet",
     "emailBodyReviewer": "Beste beoordelaar,\n\nJe bent uitgenodigd om als tweede beoordelaar de gesprekken te beoordelen in CADANS.\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen en je beoordeling in te vullen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet",
-    "exportExcel": "Exporteer naar Excel"
+    "exportExcel": "Exporteer naar Excel",
+    "regenerateConfirm": "Weet je zeker dat je een nieuwe toegangscode wilt genereren? De oude code werkt dan niet meer."
   },
   "meetings": {
     "title": "Gesprekken",
@@ -166,5 +168,12 @@
     "message": "We gebruiken essentiële cookies om onze diensten te leveren.",
     "learnMore": "Meer informatie",
     "accept": "Accepteren"
+  },
+  "feedback": {
+    "title": "Feedback sturen",
+    "description": "Deel je ideeën, bugs of alles wat kan helpen om CADANS te verbeteren.",
+    "placeholder": "Beschrijf hier je feedback...",
+    "submit": "Feedback versturen",
+    "success": "Bedankt! Je feedback is verstuurd."
   }
 }

@@ -94,13 +94,13 @@
                 <span class="text-xs font-semibold text-error">{{ $t('sessions.codeLocked') }}</span>
                 <button
                   type="button"
-                  class="text-xs text-primary hover:text-primary-dark font-medium"
-                  @click="handleGenerateStudentCode"
+                  class="px-3 py-1.5 bg-primary text-primary-text rounded-lg font-semibold text-xs hover:bg-primary-hover transition-colors"
+                  @click="requestRegenerateCode('student')"
                 >
                   {{ $t('sessions.regenerateAccessCode') }}
                 </button>
               </div>
-              <div v-else-if="session.student_access_code" class="flex items-center gap-2">
+              <div v-else-if="session.student_access_code" class="flex items-center gap-2 flex-wrap">
                 <span class="font-mono text-sm font-bold tracking-widest">{{ session.student_access_code }}</span>
                 <button
                   type="button"
@@ -122,6 +122,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </button>
+                <button
+                  type="button"
+                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-primary hover:text-primary transition-colors"
+                  @click="requestRegenerateCode('student')"
+                >
+                  {{ $t('sessions.regenerateAccessCode') }}
+                </button>
               </div>
               <button
                 v-else
@@ -139,13 +146,13 @@
                 <span class="text-xs font-semibold text-error">{{ $t('sessions.codeLocked') }}</span>
                 <button
                   type="button"
-                  class="text-xs text-primary hover:text-primary-dark font-medium"
-                  @click="handleGenerateReviewerCode"
+                  class="px-3 py-1.5 bg-primary text-primary-text rounded-lg font-semibold text-xs hover:bg-primary-hover transition-colors"
+                  @click="requestRegenerateCode('reviewer')"
                 >
                   {{ $t('sessions.regenerateAccessCode') }}
                 </button>
               </div>
-              <div v-else-if="session.reviewer_access_code" class="flex items-center gap-2">
+              <div v-else-if="session.reviewer_access_code" class="flex items-center gap-2 flex-wrap">
                 <span class="font-mono text-sm font-bold tracking-widest">{{ session.reviewer_access_code }}</span>
                 <button
                   type="button"
@@ -166,6 +173,13 @@
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
+                </button>
+                <button
+                  type="button"
+                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-primary hover:text-primary transition-colors"
+                  @click="requestRegenerateCode('reviewer')"
+                >
+                  {{ $t('sessions.regenerateAccessCode') }}
                 </button>
               </div>
               <button
@@ -328,6 +342,17 @@
       @confirm="confirmDelete"
     />
   </AppLayout>
+
+  <!-- Regenerate Access Code Confirmation Dialog -->
+  <ConfirmDialog
+    v-model="showRegenerateConfirm"
+    :title="$t('common.confirm')"
+    :message="$t('sessions.regenerateConfirm')"
+    :confirm-text="$t('sessions.regenerateAccessCode')"
+    :cancel-text="$t('common.cancel')"
+    variant="default"
+    @confirm="confirmRegenerateCode"
+  />
 </template>
 
 <script setup>
@@ -348,6 +373,8 @@ const meetingsStore = useMeetingsStore()
 
 const loading = ref(true)
 const showDeleteConfirm = ref(false)
+const showRegenerateConfirm = ref(false)
+const regenerateRole = ref(null) // 'student' | 'reviewer' | null
 const session = ref(null)
 const meetings = ref([])
 
@@ -381,6 +408,25 @@ async function handleGenerateReviewerCode() {
   if (data) {
     session.value = data
   }
+}
+
+function requestRegenerateCode(role) {
+  regenerateRole.value = role
+  showRegenerateConfirm.value = true
+}
+
+async function confirmRegenerateCode() {
+  if (!session.value || !regenerateRole.value) return
+
+  if (regenerateRole.value === 'student') {
+    const { data } = await sessionsStore.generateStudentCode(session.value.id)
+    if (data) session.value = data
+  } else if (regenerateRole.value === 'reviewer') {
+    const { data } = await sessionsStore.generateReviewerCode(session.value.id)
+    if (data) session.value = data
+  }
+
+  regenerateRole.value = null
 }
 
 function copyToClipboard(text) {

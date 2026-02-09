@@ -86,7 +86,7 @@ export const useSessionsStore = defineStore('sessions', () => {
       loading.value = true
       error.value = null
 
-      // Generate code if not provided
+      // Generate session code if not provided
       if (!code) {
         code = generateCode()
       }
@@ -134,6 +134,10 @@ export const useSessionsStore = defineStore('sessions', () => {
         })
       }
 
+      // Prepare initial access codes for student and reviewer
+      const studentAccessCode = generateAccessCode()
+      const reviewerAccessCode = generateAccessCode()
+
       // Create the session
       const { data: session, error: insertError } = await supabase
         .from('grading_sessions')
@@ -147,6 +151,12 @@ export const useSessionsStore = defineStore('sessions', () => {
           end_date: null,
           number_of_meetings: 4,
           competencies: sessionCompetencies,
+          student_access_code: studentAccessCode,
+          student_code_attempts: 0,
+          student_code_locked: false,
+          reviewer_access_code: reviewerAccessCode,
+          reviewer_code_attempts: 0,
+          reviewer_code_locked: false,
         })
         .select()
         .single()
