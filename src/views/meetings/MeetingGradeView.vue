@@ -9,16 +9,29 @@
     </div>
 
     <div v-else>
-      <div class="mb-8">
-        <RouterLink
-          :to="`/session/${session.id}`"
-          class="text-text-secondary hover:text-text-primary mb-4 inline-block"
+      <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <RouterLink
+            :to="`/session/${session.id}`"
+            class="text-text-secondary hover:text-text-primary mb-4 inline-block"
+          >
+            ← {{ $t('common.back') }}
+          </RouterLink>
+          <h1 class="font-heading text-4xl mt-4">
+            {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
+          </h1>
+        </div>
+        <!-- Top-right AI assistant button -->
+        <button
+          type="button"
+          @click="openLlmModal"
+          class="self-start md:self-auto px-5 py-3 bg-surface-elevated border border-border rounded-full font-semibold shadow-lg hover:bg-hover hover:shadow-xl transition-all flex items-center gap-2 text-sm"
         >
-          ← {{ $t('common.back') }}
-        </RouterLink>
-        <h1 class="font-heading text-4xl mt-4">
-          {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
-        </h1>
+          <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-3l-4 4z" />
+          </svg>
+          <span>{{ $t('meetings.llmAssistant') }}</span>
+        </button>
       </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-8">
@@ -323,21 +336,9 @@
 
         <!-- General Notes -->
         <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="block text-sm font-medium">
-              {{ $t('meetings.generalNotes') }}
-            </label>
-            <button
-              type="button"
-              @click="openLlmModal"
-              class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border border-border bg-surface hover:bg-hover transition-colors"
-            >
-              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-3l-4 4z" />
-              </svg>
-              <span>{{ $t('meetings.llmAssistant') }}</span>
-            </button>
-          </div>
+          <label class="block text-sm font-medium mb-2">
+            {{ $t('meetings.generalNotes') }}
+          </label>
           <textarea
             v-model="formData.generalNotes"
             rows="4"
@@ -356,23 +357,18 @@
 
     <!-- Floating Buttons -->
     <div class="fixed bottom-6 right-6 z-40 flex gap-3 items-center">
-      <!-- Save Draft Button + shortcut hint -->
-      <div class="flex flex-col items-center">
-        <button
-          type="button"
-          @click="handleSaveDraft"
-          :disabled="saving"
-          class="px-5 py-3 bg-surface-elevated border border-border rounded-full font-semibold shadow-lg hover:bg-hover hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-          </svg>
-          {{ saving ? $t('common.loading') : $t('meetings.saveDraft') }}
-        </button>
-        <p class="mt-1 text-[11px] leading-tight text-text-tertiary">
-          {{ isMac ? $t('meetings.saveShortcutMac') : $t('meetings.saveShortcutWin') }}
-        </p>
-      </div>
+      <!-- Save Draft Button -->
+      <button
+        type="button"
+        @click="handleSaveDraft"
+        :disabled="saving"
+        class="px-5 py-3 bg-surface-elevated border border-border rounded-full font-semibold shadow-lg hover:bg-hover hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2 text-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+        </svg>
+        {{ saving ? $t('common.loading') : $t('meetings.saveDraft') }}
+      </button>
       <!-- Submit Button -->
       <button
         type="button"

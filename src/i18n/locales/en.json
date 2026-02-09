@@ -142,9 +142,9 @@
     "llmUseSummary": "Use last answer as general notes",
     "llmNotConfigured": "The AI assistant is not configured yet. Please contact your administrator.",
     "llmGenericError": "Something went wrong while contacting the AI assistant.",
-    "saveShortcutMac": "Shortcut: Cmd + Enter to save",
+    "saveShortcutMac": "Shortcut: ⌘ + Enter to save",
     "saveShortcutWin": "Shortcut: Ctrl + Enter to save",
-    "llmShortcutMac": "Shortcut: Cmd + Enter to send your question",
+    "llmShortcutMac": "Shortcut: ⌘ + Enter to send your question",
     "llmShortcutWin": "Shortcut: Ctrl + Enter to send your question"
   },
   "publicAccess": {
