@@ -23,7 +23,9 @@
     "optional": "Optioneel",
     "select": "Selecteren...",
     "notSet": "Niet ingesteld",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "gridView": "Rasterweergave",
+    "listView": "Lijstweergave"
   },
   "auth": {
     "login": "Inloggen",

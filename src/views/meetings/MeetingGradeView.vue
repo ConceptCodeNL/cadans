@@ -99,6 +99,34 @@
         <div>
           <div class="flex items-center justify-between mb-4">
             <h2 class="font-heading text-2xl">{{ $t('meetings.competencyScores') }}</h2>
+            <div class="flex items-center gap-1 p-1 bg-surface border border-border rounded-lg">
+              <button
+                type="button"
+                @click="setViewMode('grid')"
+                :class="[
+                  'p-1.5 rounded transition-colors',
+                  competencyViewMode === 'grid' ? 'bg-surface-elevated text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'
+                ]"
+                :title="$t('common.gridView')"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                @click="setViewMode('list')"
+                :class="[
+                  'p-1.5 rounded transition-colors',
+                  competencyViewMode === 'list' ? 'bg-surface-elevated text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-primary'
+                ]"
+                :title="$t('common.listView')"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <!-- Advice banner based on average score -->
@@ -131,7 +159,7 @@
               <p class="font-heading text-2xl">{{ averageGrade != null ? averageGrade : '–' }}</p>
             </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div :class="competencyViewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'flex flex-col gap-6 max-w-[50%] mx-auto'">
             <div
               v-for="comp in visibleCompetencies"
               :key="comp.id"
@@ -651,6 +679,12 @@ const scoreLevels = [
 
 // Accordion state for competency descriptions
 const expandedCompetencies = reactive({})
+const competencyViewMode = ref(localStorage.getItem('competencyViewMode') || 'grid')
+
+function setViewMode(mode) {
+  competencyViewMode.value = mode
+  localStorage.setItem('competencyViewMode', mode)
+}
 
 function toggleCompetencyInfo(compId) {
   expandedCompetencies[compId] = !expandedCompetencies[compId]

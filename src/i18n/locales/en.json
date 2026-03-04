@@ -23,7 +23,9 @@
     "optional": "Optional",
     "select": "Select...",
     "notSet": "Not set",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "gridView": "Grid view",
+    "listView": "List view"
   },
   "auth": {
     "login": "Login",
