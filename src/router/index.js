@@ -35,6 +35,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/session/:id/edit',
+      name: 'session-edit',
+      component: () => import('@/views/sessions/SessionEditView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/session/:sessionId/meeting/:meetingId',
       name: 'meeting-grade',
       component: () => import('@/views/meetings/MeetingGradeView.vue'),

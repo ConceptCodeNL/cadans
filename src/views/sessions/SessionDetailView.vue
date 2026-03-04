@@ -46,16 +46,15 @@
               </svg>
               {{ $t('sessions.exportPdf') }}
             </button>
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-error/30 rounded-lg text-sm font-semibold text-error hover:bg-error/10 hover:border-error transition-colors"
-              @click="showDeleteConfirm = true"
+            <RouterLink
+              :to="`/session/${session.id}/edit`"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              {{ $t('common.delete') }}
-            </button>
+              {{ $t('common.edit') }}
+            </RouterLink>
           </div>
         </div>
 
@@ -520,16 +519,6 @@
       </div>
     </Teleport>
 
-    <!-- Delete Confirmation Dialog -->
-    <ConfirmDialog
-      v-model="showDeleteConfirm"
-      :title="$t('common.confirm')"
-      :message="session ? session.code + ' — ' + $t('sessions.deleteConfirm') : ''"
-      :confirm-text="$t('common.delete')"
-      :cancel-text="$t('common.cancel')"
-      variant="danger"
-      @confirm="confirmDelete"
-    />
   </AppLayout>
 
   <!-- Regenerate Access Code Confirmation Dialog -->
@@ -561,7 +550,6 @@ const sessionsStore = useSessionsStore()
 const meetingsStore = useMeetingsStore()
 
 const loading = ref(true)
-const showDeleteConfirm = ref(false)
 const showRegenerateConfirm = ref(false)
 const regenerateRole = ref(null) // 'student' | 'reviewer' | 'viewer' | null
 const session = ref(null)
@@ -682,12 +670,6 @@ function handleExportPdf() {
   if (!session.value || !meetings.value) return
   const locale = $t('app.name') ? (localStorage.getItem('locale') || 'nl') : 'nl'
   exportSessionToPdf(session.value, meetings.value, locale)
-}
-
-async function confirmDelete() {
-  if (!session.value) return
-  await sessionsStore.deleteSession(session.value.id)
-  router.push('/sessions')
 }
 
 function formatDate(dateString) {
