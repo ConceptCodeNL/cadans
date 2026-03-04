@@ -42,3 +42,4 @@ CREATE POLICY "Authenticated users can delete students"
 SELECT id, role FROM profiles WHERE id = auth.uid();
 
 
+

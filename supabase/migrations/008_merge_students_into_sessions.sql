@@ -69,3 +69,4 @@ CREATE POLICY "Authenticated users can delete sessions"
   USING (true);
 
 
+

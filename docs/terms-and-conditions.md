@@ -162,7 +162,7 @@ CADANS is een studentbeoordelingsplatform dat docenten, bedrijfsbeoordelaars en 
 **Accounttypen:**
 - **Docent**: Kan beoordelingssessies aanmaken, vergaderingen beoordelen en eindbeoordelingen instellen
 - **Bedrijfsbeoordelaar**: Kan vergaderingen beoordelen en adviesbeoordelingen verstrekken (indien uitgenodigd)
-- **Tweede Beoordelaar**: Kan beoordelingssessies bekijken met alleen-lezen toegang (indien uitgenodigd)
+- **Bedrijfsbegeleider**: Kan beoordelingssessies bekijken met alleen-lezen toegang (indien uitgenodigd)
 - **Beheerder**: Kan competenties, instellingen en organisatievoorkeuren configureren
 
 ### 4. Studentenprivacy
@@ -279,5 +279,6 @@ Voor vragen over deze Voorwaarden:
 - Adres: [bedrijfsadres]
 
 **Laatst Bijgewerkt**: [Datum]
+
 
 

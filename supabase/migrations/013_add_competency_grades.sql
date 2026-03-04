@@ -2,3 +2,4 @@
 ALTER TABLE meetings ADD COLUMN IF NOT EXISTS competency_grades JSONB DEFAULT '{}';
 
 
+

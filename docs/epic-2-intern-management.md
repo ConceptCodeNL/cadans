@@ -111,3 +111,4 @@ Enable HR managers and supervisors to create, assign, and manage intern profiles
 - Consider adding profile photo upload
 
 
+

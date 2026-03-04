@@ -188,3 +188,4 @@ The application is fully functional with:
 All core features from the documentation are implemented!
 
 
+

@@ -17,3 +17,4 @@ create policy "feedback_select_own" on public.feedback
   using (auth.uid() is not null and user_id = auth.uid());
 
 
+

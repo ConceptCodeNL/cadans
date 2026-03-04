@@ -5,3 +5,4 @@ ALTER TABLE meetings
   ADD COLUMN IF NOT EXISTS tips_tops JSONB DEFAULT '[]';
 
 
+

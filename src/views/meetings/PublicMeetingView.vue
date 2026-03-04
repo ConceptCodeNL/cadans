@@ -895,15 +895,20 @@ async function handleVerify() {
 // ---- Form initialization ----
 function initFormData() {
   const m = meetingData.value
-  const competencyTipsTops = m.competency_notes || {}
+
+  // Reviewer uses dedicated reviewer_* fields; student/teacher use the shared fields
+  const isReviewer = role.value === 'reviewer'
+  const competencyTipsTops = isReviewer
+    ? (m.reviewer_competency_notes || {})
+    : (m.competency_notes || {})
 
   formData.value = {
-    meetingDate: m.meeting_date || '',
-    overallGrade: m.overall_grade || '',
-    competencyScores: m.competency_scores || {},
-    competencyGrades: m.competency_grades || {},
+    meetingDate: isReviewer ? (m.reviewer_meeting_date || '') : (m.meeting_date || ''),
+    overallGrade: isReviewer ? (m.reviewer_overall_grade || '') : (m.overall_grade || ''),
+    competencyScores: isReviewer ? (m.reviewer_competency_scores || {}) : (m.competency_scores || {}),
+    competencyGrades: isReviewer ? (m.reviewer_competency_grades || {}) : (m.competency_grades || {}),
     competencyTipsTops,
-    generalNotes: m.general_notes || '',
+    generalNotes: isReviewer ? (m.reviewer_general_notes || '') : (m.general_notes || ''),
   }
 
   // Initialize missing competency arrays
@@ -1095,7 +1100,20 @@ function sanitizeGrades() {
 
 // ---- Save / Submit ----
 function buildMeetingData(status) {
-  const data = {
+  if (role.value === 'reviewer') {
+    // Reviewer saves only to dedicated reviewer_* fields, never overwrites teacher's data
+    return {
+      reviewer_meeting_date: formData.value.meetingDate || null,
+      reviewer_overall_grade: formData.value.overallGrade || null,
+      reviewer_competency_scores: formData.value.competencyScores,
+      reviewer_competency_grades: sanitizeGrades(),
+      reviewer_competency_notes: formData.value.competencyTipsTops,
+      reviewer_general_notes: formData.value.generalNotes || null,
+      reviewer_status: status,
+    }
+  }
+
+  return {
     meeting_date: formData.value.meetingDate || null,
     overall_grade: formData.value.overallGrade || null,
     competency_scores: formData.value.competencyScores,
@@ -1104,11 +1122,6 @@ function buildMeetingData(status) {
     general_notes: formData.value.generalNotes || null,
     status,
   }
-  // Also store reviewer grades in a separate field for teacher reference
-  if (role.value === 'reviewer') {
-    data.reviewer_competency_grades = sanitizeGrades()
-  }
-  return data
 }
 
 async function handleSaveDraft() {

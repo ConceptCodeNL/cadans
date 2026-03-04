@@ -94,3 +94,4 @@ LEVEL OF INDEPENDENCE
 WHERE name = 'Professional attitude' AND is_system_default = TRUE;
 
 
+

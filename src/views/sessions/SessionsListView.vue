@@ -73,19 +73,18 @@
         <!-- Reviewer meeting buttons -->
         <p class="text-xs text-text-tertiary font-medium mb-1">{{ $t('sessions.reviewerRow') }}</p>
         <div class="flex gap-2 mb-2">
-          <div
+          <RouterLink
             v-for="meeting in getMeetings(session.id)"
             :key="'r-' + meeting.id"
+            :to="`/session/${session.id}/meeting/${meeting.id}/reviewer`"
             :class="[
-              'flex-1 py-2 rounded-lg text-center text-xs font-semibold',
-              session.reviewer_access_code
-                ? 'bg-info-light text-info-text border border-info-border'
-                : 'bg-hover text-text-tertiary border border-border'
+              'flex-1 py-2 rounded-lg text-center text-xs font-semibold transition-colors',
+              getMeetingClass(meeting.reviewer_overall_grade)
             ]"
             :title="meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}`"
           >
             {{ meeting.is_end_grade ? 'EB' : meeting.meeting_number }}
-          </div>
+          </RouterLink>
         </div>
 
         <!-- Student meeting buttons -->
@@ -279,7 +278,7 @@ async function fetchAllMeetings() {
 
   const { data } = await supabase
     .from('meetings')
-    .select('id, grading_session_id, meeting_number, overall_grade, status, student_token, reviewer_token, is_end_grade')
+    .select('id, grading_session_id, meeting_number, overall_grade, reviewer_overall_grade, status, student_token, reviewer_token, is_end_grade')
     .in('grading_session_id', sessionIds)
     .order('meeting_number', { ascending: true })
 

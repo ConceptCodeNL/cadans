@@ -41,6 +41,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/session/:sessionId/meeting/:meetingId/reviewer',
+      name: 'meeting-reviewer-view',
+      component: () => import('@/views/meetings/ReviewerMeetingReadView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: () => import('@/views/settings/SettingsView.vue'),

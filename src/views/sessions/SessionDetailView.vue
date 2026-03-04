@@ -201,25 +201,50 @@
           <h2 class="font-heading text-2xl">{{ $t('sessions.teacherRow') }} — {{ $t('meetings.title') }}</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <RouterLink
+          <div
             v-for="meeting in meetings"
             :key="meeting.id"
-            :to="`/session/${session.id}/meeting/${meeting.id}`"
-            class="bg-surface rounded-xl p-6 border border-border hover:border-primary transition-colors"
+            class="bg-surface rounded-xl border border-border flex flex-col"
           >
-            <h3 class="font-heading text-xl mb-2">
-              {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
-            </h3>
-            <p class="text-sm text-text-secondary mb-2">
-              {{ meeting.meeting_date ? formatDate(meeting.meeting_date) : $t('common.notSet') }}
-            </p>
-            <span
-              class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
-              :class="getMeetingStatusClass(meeting.status)"
+            <RouterLink
+              :to="`/session/${session.id}/meeting/${meeting.id}`"
+              class="flex-1 p-6 hover:border-primary transition-colors rounded-t-xl"
             >
-              {{ $t(`meetings.${meeting.status}`) }}
-            </span>
-          </RouterLink>
+              <h3 class="font-heading text-xl mb-2">
+                {{ meeting.is_end_grade ? $t('meetings.endGrade') : `${$t('meetings.meeting')} ${meeting.meeting_number}` }}
+              </h3>
+              <p class="text-sm text-text-secondary mb-2">
+                {{ meeting.meeting_date ? formatDate(meeting.meeting_date) : $t('common.notSet') }}
+              </p>
+              <span
+                class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
+                :class="meeting.overall_grade ? getReviewerOverallGradeClass(meeting.overall_grade) : getMeetingStatusClass(meeting.status)"
+              >
+                {{ meeting.overall_grade ? $t(`meetings.${meeting.overall_grade}`) : $t(`meetings.${meeting.status}`) }}
+              </span>
+              <div v-if="meeting.reviewer_overall_grade" class="mt-2 flex items-center gap-1.5">
+                <span class="text-xs text-text-tertiary">{{ $t('sessions.reviewerRow') }}:</span>
+                <span
+                  class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold"
+                  :class="getReviewerOverallGradeClass(meeting.reviewer_overall_grade)"
+                >
+                  {{ $t(`meetings.${meeting.reviewer_overall_grade}`) }}
+                </span>
+              </div>
+            </RouterLink>
+            <div class="px-4 pb-4">
+              <RouterLink
+                :to="`/session/${session.id}/meeting/${meeting.id}/reviewer`"
+                class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-info-light text-info-text border border-info-border rounded-lg text-xs font-semibold hover:bg-info hover:text-white hover:border-info transition-colors"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                {{ $t('meetings.viewReviewer') }}
+              </RouterLink>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -502,5 +527,14 @@ function getMeetingStatusClass(status) {
     submitted: 'bg-success-light text-success-text',
   }
   return classes[status] || classes.draft
+}
+
+function getReviewerOverallGradeClass(grade) {
+  const classes = {
+    bad: 'bg-error/10 text-error',
+    go_but_needs_attention: 'bg-warning-light text-warning-text',
+    all_good: 'bg-success-light text-success-text',
+  }
+  return classes[grade] || ''
 }
 </script>
