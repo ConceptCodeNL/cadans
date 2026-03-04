@@ -360,6 +360,34 @@ export const useSessionsStore = defineStore('sessions', () => {
     }
   }
 
+  async function generateViewerCode(sessionId) {
+    try {
+      const code = generateAccessCode()
+      const { data, error: updateError } = await supabase
+        .from('grading_sessions')
+        .update({
+          viewer_access_code: code,
+          viewer_code_attempts: 0,
+          viewer_code_locked: false,
+        })
+        .eq('id', sessionId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      if (currentSession.value?.id === sessionId) {
+        currentSession.value = data
+      }
+      const index = sessions.value.findIndex(s => s.id === sessionId)
+      if (index !== -1) sessions.value[index] = data
+
+      return { data, error: null }
+    } catch (err) {
+      return { data: null, error: err.message }
+    }
+  }
+
   async function verifyAccessCode(sessionId, code, role) {
     // role = 'student' or 'reviewer'
     try {
@@ -437,6 +465,7 @@ export const useSessionsStore = defineStore('sessions', () => {
     generateCode,
     generateStudentCode,
     generateReviewerCode,
+    generateViewerCode,
     verifyAccessCode,
   }
 })

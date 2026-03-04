@@ -896,19 +896,25 @@ async function handleVerify() {
 function initFormData() {
   const m = meetingData.value
 
-  // Reviewer uses dedicated reviewer_* fields; student/teacher use the shared fields
   const isReviewer = role.value === 'reviewer'
-  const competencyTipsTops = isReviewer
-    ? (m.reviewer_competency_notes || {})
-    : (m.competency_notes || {})
+  const isStudent = role.value === 'student'
+
+  let competencyTipsTops
+  if (isReviewer) {
+    competencyTipsTops = m.reviewer_competency_notes || {}
+  } else if (isStudent) {
+    competencyTipsTops = m.student_competency_notes || {}
+  } else {
+    competencyTipsTops = m.competency_notes || {}
+  }
 
   formData.value = {
-    meetingDate: isReviewer ? (m.reviewer_meeting_date || '') : (m.meeting_date || ''),
-    overallGrade: isReviewer ? (m.reviewer_overall_grade || '') : (m.overall_grade || ''),
-    competencyScores: isReviewer ? (m.reviewer_competency_scores || {}) : (m.competency_scores || {}),
+    meetingDate: isReviewer ? (m.reviewer_meeting_date || '') : isStudent ? (m.student_meeting_date || '') : (m.meeting_date || ''),
+    overallGrade: isReviewer ? (m.reviewer_overall_grade || '') : isStudent ? (m.student_overall_grade || '') : (m.overall_grade || ''),
+    competencyScores: isReviewer ? (m.reviewer_competency_scores || {}) : isStudent ? (m.student_competency_scores || {}) : (m.competency_scores || {}),
     competencyGrades: isReviewer ? (m.reviewer_competency_grades || {}) : (m.competency_grades || {}),
     competencyTipsTops,
-    generalNotes: isReviewer ? (m.reviewer_general_notes || '') : (m.general_notes || ''),
+    generalNotes: isReviewer ? (m.reviewer_general_notes || '') : isStudent ? (m.student_general_notes || '') : (m.general_notes || ''),
   }
 
   // Initialize missing competency arrays
@@ -1101,7 +1107,6 @@ function sanitizeGrades() {
 // ---- Save / Submit ----
 function buildMeetingData(status) {
   if (role.value === 'reviewer') {
-    // Reviewer saves only to dedicated reviewer_* fields, never overwrites teacher's data
     return {
       reviewer_meeting_date: formData.value.meetingDate || null,
       reviewer_overall_grade: formData.value.overallGrade || null,
@@ -1110,6 +1115,17 @@ function buildMeetingData(status) {
       reviewer_competency_notes: formData.value.competencyTipsTops,
       reviewer_general_notes: formData.value.generalNotes || null,
       reviewer_status: status,
+    }
+  }
+
+  if (role.value === 'student') {
+    return {
+      student_meeting_date: formData.value.meetingDate || null,
+      student_overall_grade: formData.value.overallGrade || null,
+      student_competency_scores: formData.value.competencyScores,
+      student_competency_notes: formData.value.competencyTipsTops,
+      student_general_notes: formData.value.generalNotes || null,
+      student_status: status,
     }
   }
 

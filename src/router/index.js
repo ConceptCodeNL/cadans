@@ -47,6 +47,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/session/:sessionId/meeting/:meetingId/student',
+      name: 'meeting-student-view',
+      component: () => import('@/views/meetings/StudentMeetingReadView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: () => import('@/views/settings/SettingsView.vue'),
@@ -80,6 +86,12 @@ const router = createRouter({
       path: '/m/r/:token',
       name: 'public-reviewer-meeting',
       component: () => import('@/views/meetings/PublicMeetingView.vue'),
+      meta: { requiresAuth: false, isPublic: true }
+    },
+    {
+      path: '/m/v/:token',
+      name: 'public-viewer-meeting',
+      component: () => import('@/views/meetings/PublicViewerView.vue'),
       meta: { requiresAuth: false, isPublic: true }
     },
     {
