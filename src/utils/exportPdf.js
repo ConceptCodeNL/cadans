@@ -1,5 +1,53 @@
 import jsPDF from 'jspdf'
-import { loc, overallGradeLabel, scoreLabel, computeAdvice, formatTipsTops } from './exportExcel'
+
+function loc(value, locale = 'nl') {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  return value[locale] || value.nl || value.en || ''
+}
+
+function overallGradeLabel(grade, locale) {
+  const nl = { bad: 'Onvoldoende', go_but_needs_attention: 'Aandacht nodig', all_good: 'Alles goed' }
+  const en = { bad: 'Bad', go_but_needs_attention: 'Needs attention', all_good: 'All good' }
+  return (locale === 'nl' ? nl : en)[grade] || ''
+}
+
+function scoreLabel(score, locale) {
+  const nl = { 1: 'Onvoldoende', 2: 'Aandacht nodig', 3: 'Neutraal', 4: 'Goed', 5: 'Uitstekend' }
+  const en = { 1: 'Bad', 2: 'Needs attention', 3: 'Neutral', 4: 'Good', 5: 'Perfect' }
+  return (locale === 'nl' ? nl : en)[score] || ''
+}
+
+function computeAdvice(competencies, scores, locale) {
+  const t = locale === 'nl'
+  if (!scores) return { label: '', numericAvg: null, weightedAvg: null }
+
+  let totalWeighted = 0
+  let totalWeight = 0
+
+  for (const comp of competencies) {
+    const score = scores[comp.id]
+    if (score != null) {
+      const weight = comp.weight || 1
+      totalWeighted += score * weight
+      totalWeight += weight
+    }
+  }
+
+  if (totalWeight === 0) return { label: '', numericAvg: null, weightedAvg: null }
+
+  const avg = totalWeighted / totalWeight
+  const rounded = Math.round(avg * 10) / 10
+
+  let label
+  if (avg <= 1.5) label = t ? 'Onvoldoende' : 'Bad'
+  else if (avg <= 2.5) label = t ? 'Aandacht nodig' : 'Needs attention'
+  else if (avg <= 3.5) label = t ? 'Neutraal' : 'Neutral'
+  else if (avg < 4.5) label = t ? 'Goed' : 'Good'
+  else label = t ? 'Uitstekend' : 'Perfect'
+
+  return { label, numericAvg: rounded, weightedAvg: rounded }
+}
 
 function roleLabel(role, locale) {
   const t = locale === 'nl'
