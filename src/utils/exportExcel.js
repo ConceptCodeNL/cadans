@@ -3,25 +3,25 @@ import * as XLSX from 'xlsx'
 /**
  * Localize a competency name/description object to a string.
  */
-function loc(value, locale = 'nl') {
+export function loc(value, locale = 'nl') {
   if (!value) return ''
   if (typeof value === 'string') return value
   return value[locale] || value.nl || value.en || ''
 }
 
-function overallGradeLabel(grade, locale) {
+export function overallGradeLabel(grade, locale) {
   const nl = { bad: 'Onvoldoende', goButNeedsAttention: 'Aandacht nodig', allGood: 'Alles goed' }
   const en = { bad: 'Bad', goButNeedsAttention: 'Needs attention', allGood: 'All good' }
   return (locale === 'nl' ? nl : en)[grade] || ''
 }
 
-function scoreLabel(score, locale) {
+export function scoreLabel(score, locale) {
   const nl = { 1: 'Onvoldoende', 2: 'Aandacht nodig', 3: 'Neutraal', 4: 'Goed', 5: 'Uitstekend' }
   const en = { 1: 'Bad', 2: 'Needs attention', 3: 'Neutral', 4: 'Good', 5: 'Perfect' }
   return (locale === 'nl' ? nl : en)[score] || ''
 }
 
-function formatTipsTops(tipsTops) {
+export function formatTipsTops(tipsTops) {
   if (!tipsTops || !Array.isArray(tipsTops) || tipsTops.length === 0) return ''
   return tipsTops.map(item => {
     const label = item.type === 'tip' ? 'TIP' : 'TOP'
@@ -29,12 +29,12 @@ function formatTipsTops(tipsTops) {
   }).join('\n')
 }
 
-function fmtDate(dateStr) {
+export function fmtDate(dateStr) {
   if (!dateStr) return ''
   try { return new Date(dateStr).toLocaleDateString('nl-NL') } catch { return dateStr }
 }
 
-function typeName(type, locale) {
+export function typeName(type, locale) {
   const nl = { standard_intern: 'Stage', graduation: 'Afstuderen' }
   const en = { standard_intern: 'Internship', graduation: 'Graduation' }
   return (locale === 'nl' ? nl : en)[type] || type || ''
@@ -290,7 +290,7 @@ function buildEndGradeSheet(wb, session, meeting, competencies, t, locale) {
 // Helpers
 // ========================================================
 
-function computeAdvice(competencies, scores, locale) {
+export function computeAdvice(competencies, scores, locale) {
   const t = locale === 'nl'
   if (!scores) return { label: '', numericAvg: null, weightedAvg: null }
 

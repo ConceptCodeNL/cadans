@@ -39,12 +39,12 @@
             <button
               type="button"
               class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
-              @click="handleExport"
+              @click="handleExportPdf"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V3m0 8l-3-3m3 3l3-3M6 21h12a2 2 0 002-2v-5H4v5a2 2 0 002 2z" />
               </svg>
-              {{ $t('sessions.exportExcel') }}
+              {{ $t('sessions.exportPdf') }}
             </button>
             <button
               type="button"
@@ -552,7 +552,7 @@ import { useSessionsStore } from '@/stores/sessions'
 import { useMeetingsStore } from '@/stores/meetings'
 import AppLayout from '@/components/AppLayout.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { exportSessionToExcel } from '@/utils/exportExcel'
+import { exportSessionToPdf } from '@/utils/exportPdf'
 
 const { t: $t } = useI18n()
 const route = useRoute()
@@ -678,10 +678,10 @@ function copyEmailBody() {
   emailModal.show = false
 }
 
-function handleExport() {
+function handleExportPdf() {
   if (!session.value || !meetings.value) return
   const locale = $t('app.name') ? (localStorage.getItem('locale') || 'nl') : 'nl'
-  exportSessionToExcel(session.value, meetings.value, locale)
+  exportSessionToPdf(session.value, meetings.value, locale)
 }
 
 async function confirmDelete() {

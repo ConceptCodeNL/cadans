@@ -104,6 +104,7 @@
     "emailBodyReviewer": "Beste beoordelaar,\n\nJe bent uitgenodigd om als tweede beoordelaar de gesprekken te beoordelen in CADANS.\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen en je beoordeling in te vullen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet",
     "emailBodyViewer": "Beste,\n\nJe bent uitgenodigd om de gesprekken in CADANS in te zien (alleen lezen).\n\nJe toegangscode is: {code}\n\nGebruik de onderstaande links om elk gesprek te openen:\n\n{links}\n\nVoer de toegangscode in wanneer daarom wordt gevraagd.\n\nMet vriendelijke groet",
     "exportExcel": "Exporteer naar Excel",
+    "exportPdf": "Exporteer inzage als PDF",
     "regenerateConfirm": "Weet je zeker dat je een nieuwe toegangscode wilt genereren? De oude code werkt dan niet meer."
   },
   "meetings": {
