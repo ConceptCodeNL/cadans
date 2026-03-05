@@ -253,7 +253,7 @@ function getTypeClass(type) {
 
 function getStatusClass(status) {
   const classes = {
-    active: 'bg-primary-light text-primary-text',
+    active: 'bg-success-light text-success-text',
     completed: 'bg-success-light text-success-text',
     archived: 'bg-muted text-muted-text',
   }
