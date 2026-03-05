@@ -39,7 +39,7 @@
         </div>
 
         <div v-if="success" class="text-success text-sm">
-          Registration successful! Please check your email.
+          Registration successful!
         </div>
 
         <button

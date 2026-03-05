@@ -21,11 +21,31 @@ export const useSessionsStore = defineStore('sessions', () => {
     try {
       loading.value = true
       error.value = null
-      const { data, error: fetchError } = await supabase
+
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      // Check if user is admin
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      const isAdmin = profile?.role === 'admin'
+
+      let query = supabase
         .from('grading_sessions')
         .select('*')
         .order('created_at', { ascending: false })
-      
+
+      // Non-admins only see their own sessions
+      if (!isAdmin) {
+        query = query.eq('teacher_id', user.id)
+      }
+
+      const { data, error: fetchError } = await query
+
       if (fetchError) throw fetchError
       sessions.value = data || []
       return { data, error: null }
