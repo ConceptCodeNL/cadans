@@ -680,7 +680,7 @@ function formatDate(dateString) {
 function getTypeClass(type) {
   const classes = {
     standard_intern: 'bg-info-light text-info-text border border-info-border',
-    graduation: 'bg-primary-light text-primary-text border border-primary',
+    graduation: 'bg-success-light text-success-text border border-success-border',
   }
   return classes[type] || classes.standard_intern
 }
