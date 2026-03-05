@@ -7,8 +7,8 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  // Initialize auth state
-  supabase.auth.getSession().then(({ data: { session } }) => {
+  // Resolves once the initial session check is done
+  const initialized = supabase.auth.getSession().then(({ data: { session } }) => {
     user.value = session?.user ?? null
   })
 
@@ -94,6 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     loading,
     error,
+    initialized,
     signIn,
     signUp,
     signOut,
