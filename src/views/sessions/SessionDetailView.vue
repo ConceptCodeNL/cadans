@@ -38,7 +38,7 @@
           <div class="ml-auto flex items-center gap-2">
             <button
               type="button"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-text-secondary hover:text-text-primary transition-colors"
               @click="handleExportPdf"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
             </button>
             <RouterLink
               :to="`/session/${session.id}/edit`"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-semibold hover:border-text-secondary hover:text-text-primary transition-colors"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -113,7 +113,7 @@
                 </button>
                 <button
                   type="button"
-                  class="p-1 text-text-tertiary hover:text-primary rounded hover:bg-hover transition-colors"
+                  class="p-1 text-text-tertiary hover:text-text-primary rounded hover:bg-hover transition-colors"
                   :title="$t('sessions.emailTemplate')"
                   @click="openEmailModal('student')"
                 >
@@ -123,7 +123,7 @@
                 </button>
                 <button
                   type="button"
-                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-primary hover:text-primary transition-colors"
+                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-text-secondary hover:text-text-primary transition-colors"
                   @click="requestRegenerateCode('student')"
                 >
                   {{ $t('sessions.regenerateAccessCode') }}
@@ -165,7 +165,7 @@
                 </button>
                 <button
                   type="button"
-                  class="p-1 text-text-tertiary hover:text-primary rounded hover:bg-hover transition-colors"
+                  class="p-1 text-text-tertiary hover:text-text-primary rounded hover:bg-hover transition-colors"
                   :title="$t('sessions.emailTemplate')"
                   @click="openEmailModal('reviewer')"
                 >
@@ -175,7 +175,7 @@
                 </button>
                 <button
                   type="button"
-                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-primary hover:text-primary transition-colors"
+                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-text-secondary hover:text-text-primary transition-colors"
                   @click="requestRegenerateCode('reviewer')"
                 >
                   {{ $t('sessions.regenerateAccessCode') }}
@@ -217,7 +217,7 @@
                 </button>
                 <button
                   type="button"
-                  class="p-1 text-text-tertiary hover:text-primary rounded hover:bg-hover transition-colors"
+                  class="p-1 text-text-tertiary hover:text-text-primary rounded hover:bg-hover transition-colors"
                   :title="$t('sessions.emailTemplate')"
                   @click="openEmailModal('viewer')"
                 >
@@ -227,7 +227,7 @@
                 </button>
                 <button
                   type="button"
-                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-primary hover:text-primary transition-colors"
+                  class="px-3 py-1 bg-surface-elevated border border-border rounded-lg text-xs font-semibold hover:border-text-secondary hover:text-text-primary transition-colors"
                   @click="requestRegenerateCode('viewer')"
                 >
                   {{ $t('sessions.regenerateAccessCode') }}
@@ -259,7 +259,7 @@
           >
             <RouterLink
               :to="`/session/${session.id}/meeting/${meeting.id}`"
-              class="flex-1 p-5 hover:border-primary transition-colors rounded-t-xl"
+              class="flex-1 p-5 hover:border-text-secondary transition-colors rounded-t-xl"
             >
               <!-- Title + status badge -->
               <div class="flex items-start justify-between gap-2 mb-3">
@@ -314,7 +314,7 @@
             <div class="px-4 pb-4 flex flex-col gap-2">
               <RouterLink
                 :to="`/session/${session.id}/meeting/${meeting.id}`"
-                class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-surface-elevated text-text-primary border border-border rounded-lg text-xs font-semibold hover:border-primary hover:text-primary transition-colors"
+                class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-surface-elevated text-text-primary border border-border rounded-lg text-xs font-semibold hover:border-text-secondary hover:text-text-primary transition-colors"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -334,7 +334,7 @@
               </RouterLink>
               <RouterLink
                 :to="`/session/${session.id}/meeting/${meeting.id}/student`"
-                class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-light text-primary-dark border border-primary rounded-lg text-xs font-semibold hover:bg-primary hover:text-primary-text hover:border-primary transition-colors"
+                class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-light text-text-primary border border-primary rounded-lg text-xs font-semibold hover:bg-primary hover:text-primary-text hover:border-text-secondary transition-colors"
               >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -369,7 +369,7 @@
                 <div class="flex items-center gap-1">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
+                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-text-secondary transition-colors"
                     @click="copyMeetingLink(meeting.student_token, 'student')"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,7 +379,7 @@
                   </button>
                   <button
                     type="button"
-                    class="p-1 bg-surface-elevated border border-border rounded hover:border-primary text-text-tertiary hover:text-primary transition-colors"
+                    class="p-1 bg-surface-elevated border border-border rounded hover:border-text-secondary text-text-tertiary hover:text-text-primary transition-colors"
                     :title="$t('sessions.openInNewTab')"
                     @click="openMeetingLink(meeting.student_token, 'student')"
                   >
@@ -409,7 +409,7 @@
                 <div class="flex items-center gap-1">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
+                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-text-secondary transition-colors"
                     @click="copyMeetingLink(meeting.reviewer_token, 'reviewer')"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -419,7 +419,7 @@
                   </button>
                   <button
                     type="button"
-                    class="p-1 bg-surface-elevated border border-border rounded hover:border-primary text-text-tertiary hover:text-primary transition-colors"
+                    class="p-1 bg-surface-elevated border border-border rounded hover:border-text-secondary text-text-tertiary hover:text-text-primary transition-colors"
                     :title="$t('sessions.openInNewTab')"
                     @click="openMeetingLink(meeting.reviewer_token, 'reviewer')"
                   >
@@ -449,7 +449,7 @@
                 <div class="flex items-center gap-1">
                   <button
                     type="button"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-primary transition-colors"
+                    class="inline-flex items-center gap-1 px-2 py-1 bg-surface-elevated border border-border rounded text-xs font-medium hover:border-text-secondary transition-colors"
                     @click="copyMeetingLink(meeting.viewer_token, 'viewer')"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -459,7 +459,7 @@
                   </button>
                   <button
                     type="button"
-                    class="p-1 bg-surface-elevated border border-border rounded hover:border-primary text-text-tertiary hover:text-primary transition-colors"
+                    class="p-1 bg-surface-elevated border border-border rounded hover:border-text-secondary text-text-tertiary hover:text-text-primary transition-colors"
                     :title="$t('sessions.openInNewTab')"
                     @click="openMeetingLink(meeting.viewer_token, 'viewer')"
                   >

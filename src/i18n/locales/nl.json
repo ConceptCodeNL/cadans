@@ -191,5 +191,14 @@
     "placeholder": "Beschrijf hier je feedback...",
     "submit": "Feedback versturen",
     "success": "Bedankt! Je feedback is verstuurd."
+  },
+  "settings": {
+    "dangerZone": "Gevarenzone",
+    "deleteAccount": "Account verwijderen",
+    "deleteAccountDescription": "Verwijder permanent je account en alle bijbehorende gegevens (sessies, gesprekken, beoordelingen). Dit kan niet ongedaan worden gemaakt.",
+    "deleteAccountConfirmTitle": "Account verwijderen?",
+    "deleteAccountConfirmText": "Dit verwijdert permanent je account en alle gekoppelde gegevens. Dit kan niet ongedaan worden gemaakt.",
+    "deleteAccountConfirmButton": "Ja, verwijder mijn account",
+    "deleteAccountError": "Er is iets misgegaan bij het verwijderen van je account. Probeer het opnieuw."
   }
 }

@@ -90,6 +90,22 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function deleteAccount() {
+    try {
+      loading.value = true
+      error.value = null
+      const { error: fnError } = await supabase.rpc('delete_own_account')
+      if (fnError) throw fnError
+      user.value = null
+      return { error: null }
+    } catch (err) {
+      error.value = err.message
+      return { error: err.message }
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     user,
     loading,
@@ -99,6 +115,7 @@ export const useAuthStore = defineStore('auth', () => {
     signUp,
     signOut,
     resetPassword,
+    deleteAccount,
   }
 })
 

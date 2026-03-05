@@ -191,5 +191,14 @@
     "placeholder": "Describe your feedback here...",
     "submit": "Submit Feedback",
     "success": "Thank you! Your feedback has been sent."
+  },
+  "settings": {
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDescription": "Permanently delete your account and all associated data (sessions, meetings, grades). This action cannot be undone.",
+    "deleteAccountConfirmTitle": "Delete your account?",
+    "deleteAccountConfirmText": "This will permanently delete your account and all data linked to it. This cannot be undone.",
+    "deleteAccountConfirmButton": "Yes, delete my account",
+    "deleteAccountError": "Something went wrong while deleting your account. Please try again."
   }
 }

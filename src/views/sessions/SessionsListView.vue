@@ -106,7 +106,7 @@
 
         <RouterLink
           :to="`/session/${session.id}`"
-          class="block w-full px-4 py-2 bg-surface-elevated border border-border rounded-lg font-semibold hover:border-primary transition-colors text-center text-sm"
+          class="block w-full px-4 py-2 bg-surface-elevated border border-border rounded-lg font-semibold hover:border-text-secondary transition-colors text-center text-sm"
         >
           {{ $t('sessions.viewSession') }} →
         </RouterLink>
@@ -137,7 +137,7 @@
                   'px-4 py-3 rounded-xl font-semibold transition-all text-sm',
                   newType === 'standard_intern'
                     ? 'bg-primary text-primary-text scale-105'
-                    : 'bg-surface border-2 border-border hover:border-primary'
+                    : 'bg-surface border-2 border-border hover:border-text-secondary'
                 ]"
               >
                 {{ $t('sessions.types.standard_intern') }}
@@ -149,7 +149,7 @@
                   'px-4 py-3 rounded-xl font-semibold transition-all text-sm',
                   newType === 'graduation'
                     ? 'bg-primary text-primary-text scale-105'
-                    : 'bg-surface border-2 border-border hover:border-primary'
+                    : 'bg-surface border-2 border-border hover:border-text-secondary'
                 ]"
               >
                 {{ $t('sessions.types.graduation') }}
