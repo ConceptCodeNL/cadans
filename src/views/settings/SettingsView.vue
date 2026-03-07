@@ -3,7 +3,7 @@
     <h1 class="font-heading text-4xl mb-8">{{ $t('navigation.settings') }}</h1>
 
     <div class="space-y-8">
-      <div class="bg-surface rounded-xl p-6 border border-border">
+      <div v-if="isAdmin" class="bg-surface rounded-xl p-6 border border-border">
         <h2 class="font-heading text-2xl mb-4">Competencies</h2>
         <p class="text-text-secondary mb-4">Manage competency templates</p>
         <button class="px-4 py-2 bg-primary text-primary-text rounded-lg font-semibold hover:bg-primary-hover transition-colors">
@@ -69,11 +69,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '@/composables/useTheme'
 import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
 import AppLayout from '@/components/AppLayout.vue'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
@@ -83,9 +84,19 @@ const router = useRouter()
 const { theme } = useTheme()
 const authStore = useAuthStore()
 
+const isAdmin = ref(false)
 const showConfirm = ref(false)
 const deleting = ref(false)
 const deleteError = ref('')
+
+onMounted(async () => {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', authStore.user.id)
+    .single()
+  isAdmin.value = profile?.role === 'admin'
+})
 
 async function handleDeleteAccount() {
   deleting.value = true
